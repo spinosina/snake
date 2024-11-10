@@ -17,6 +17,7 @@ int nextMoveIsRect(SDL_FRect rect, SDL_FRect food, SDL_FRect obstacle, std::stri
 pos getNewCoordinates(void);
 void onButtonMove(std::string direction);
 void removeUselessPos();
+void checkIfOutOfWindow(struct body body);
 
 #endif
 

@@ -20,6 +20,8 @@
 #define L 20
 #define MAX 600
 #define MIN 0
+#define DIM_H 600 //componente orizzontale della risoluzione
+#define DIM_V 600 //componente verticale della risoluzione
 
 struct body {
     SDL_FRect rect;
@@ -201,6 +203,26 @@ void removeUselessPos() {
     return;
 }
 
+// questa funzione riposiziona correttamente ogni parte del corpo di snake quando esce dalla
+// window, quindi quando le coordinate sono <0 o >DIM_H (che è la componente di altezza massima)
+// o >DIM_V (che è la componente di ampiezza massima)
+void checkIfOutOfWindow(int i) {
+    if (vectorBody[i].rect.x < 0) {
+        vectorBody[i].rect.x = DIM_H;
+        printf("la x era < 0, ora è: %f", vectorBody[i].rect.x);
+    } else if (vectorBody[i].rect.x > MAX) {
+        vectorBody[i].rect.x = 0;
+        printf("la x era > MAX, ora è: %f", vectorBody[i].rect.x);
+    } else if (vectorBody[i].rect.y < 0) {
+        vectorBody[i].rect.y = DIM_V;
+        printf("la y era < 0, ora è: %f", vectorBody[i].rect.y);
+    } else if (vectorBody[i].rect.y > MAX) {
+        vectorBody[i].rect.y = 0;
+        printf("la y era > MAX, ora è: %f", vectorBody[i].rect.y);
+    }
+    return;
+}
+
 void onButtonMove(std::string direction) {
     //printf("direzione di pivot: %s, direzione cliccata %s\n", vectorBody[0].direction.c_str(), direction.c_str());
     std::string pivotDirectionBeforeChange = vectorBody[0].direction;
@@ -238,17 +260,18 @@ void onButtonMove(std::string direction) {
         }
 
         if (vectorBody[i].direction == "SDLK_DOWN") {
-            vectorBody[i].rect.y += L;
+                vectorBody[i].rect.y += L;
         }
         else if (vectorBody[i].direction == "SDLK_UP") {
-            vectorBody[i].rect.y -= L;
+                vectorBody[i].rect.y -= L;
         }
         else if (vectorBody[i].direction == "SDLK_RIGHT") {
-            vectorBody[i].rect.x += L;
+                vectorBody[i].rect.x += L;
         }
         else if (vectorBody[i].direction == "SDLK_LEFT") {
-            vectorBody[i].rect.x -= L;
+                vectorBody[i].rect.x -= L;
         }
+        checkIfOutOfWindow(i);
     }
     return;
 }

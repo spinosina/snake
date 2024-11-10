@@ -47,8 +47,8 @@ int main(void) {
     }
 
     // creiamo il renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (renderer == NULL) {
         printf("ERROR IN SCREEN INIT: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
@@ -149,7 +149,7 @@ int main(void) {
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
-                } 
+                }
 
                 // caso in cui rect incontra un ostacolo 
                 else if (nextMove == 1) {
@@ -188,7 +188,7 @@ int main(void) {
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
-                } 
+                }
 
                 // caso in cui rect incontra un ostacolo 
                 else if (nextMove == 1) {
