@@ -210,13 +210,13 @@ void checkIfOutOfWindow(int i) {
     if (vectorBody[i].rect.x < 0) {
         vectorBody[i].rect.x = DIM_H;
         printf("la x era < 0, ora è: %f", vectorBody[i].rect.x);
-    } else if (vectorBody[i].rect.x > MAX) {
+    } else if (vectorBody[i].rect.x == MAX) {
         vectorBody[i].rect.x = 0;
         printf("la x era > MAX, ora è: %f", vectorBody[i].rect.x);
     } else if (vectorBody[i].rect.y < 0) {
         vectorBody[i].rect.y = DIM_V;
         printf("la y era < 0, ora è: %f", vectorBody[i].rect.y);
-    } else if (vectorBody[i].rect.y > MAX) {
+    } else if (vectorBody[i].rect.y == MAX) {
         vectorBody[i].rect.y = 0;
         printf("la y era > MAX, ora è: %f", vectorBody[i].rect.y);
     }
