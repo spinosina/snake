@@ -37,7 +37,7 @@ int nextMoveIsRect(Square rect, Square food, Square obstacle, std::string direct
         rect.setX(rect.getX() - L);
         
     if (rect.getX() == food.getX() && rect.getY() == food.getY()) {
-        //onButtonMove(direction);
+        onButtonMove(direction);
         return 0;
     }
 

@@ -42,7 +42,7 @@ void Position::setDirection(std::string direction) {
 }
 
 Position Position::getNewCoordinates() {
-    int x = 0; int y = 0;
+    int x=-1; int y=-1;
     
     while ((x%L != 0) == true || (x == DIM_H) == true) {
         x = 0 + (rand() % (DIM_H -  0 + 1));
@@ -52,8 +52,12 @@ Position Position::getNewCoordinates() {
         y = 0 + (rand() % (DIM_H - 0 + 1));
     }
 
+    printf("nuove coordinate calcolate %d, %d\n", x, y);
+
     float xF = (float)x;
     float yF = (float)y;
+
+    printf("nuove coordinate calcolate %f, %f\n", xF, yF);
 
     return Position(xF, yF, "");
 }

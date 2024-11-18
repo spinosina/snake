@@ -68,7 +68,7 @@ int main(void) {
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
 
-                if (pivot.getDirection() == "") {
+                if (vectorBody[0].getDirection() == "") {
                     printf("caso direction == ""\n");
                     vectorBody[0].setDirection("SDLK_DOWN");
                 }
@@ -107,7 +107,7 @@ int main(void) {
             // mi muovo in alto
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_UP) {
 
-                if (pivot.getDirection() == "") {
+                if (vectorBody[0].getDirection() == "") {
                     printf("caso direction == ""\n");
                     vectorBody[0].setDirection("SDLK_UP");
                 }
@@ -145,7 +145,7 @@ int main(void) {
             // mi muovo a sinistra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
 
-                if (pivot.getDirection() == "") {
+                if (vectorBody[0].getDirection() == "") {
                     printf("caso direction == ""\n");
                     vectorBody[0].setDirection("SDLK_LEFT");
                 }
@@ -183,7 +183,7 @@ int main(void) {
             // mi muovo a destra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
 
-                if (pivot.getDirection() == "") {
+                if (vectorBody[0].getDirection() == "") {
                     printf("caso direction == ""\n");
                     vectorBody[0].setDirection("SDLK_RIGHT");
                 }
