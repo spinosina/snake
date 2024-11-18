@@ -1,0 +1,11 @@
+#ifndef GLOBALS_H
+#define GLOBALS_H
+
+#include <vector>
+
+#include "Snake_temp.h"
+#include "Positions_temp.h"
+
+    extern std::vector<Body> vectorBody;
+    extern std::vector<Position> vectorPosChanged;
+#endif

@@ -4,10 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#include "movement.h"
-#include "growth.h"
-#include "globals.h"
+#include "movement_temp.h"
+#include "growth_temp.h"
+#include "globals_temp.h"
 
+#include "Snake_temp.h"
+#include "Positions_temp.h"
+#include "SDL_init.h"
 #include <SDL.h>
 
 #define RESET   "\033[0m"
@@ -15,63 +18,36 @@
 #define GREEN   "\033[32m"
 #define YELLOW  "\033[33m"
 #define BLUE    "\033[34m"
-#define MAGENTA "\033[35m"
-#define CYAN    "\033[36m"
-#define WHITE   "\033[37m"
 
 #define DIM_H 600 //componente orizzontale della risoluzione
 #define DIM_V 600 //componente verticale della risoluzione
-#define CELL_SIZE 20
 
 #define L 20
-#define MAX 600
-#define MIN 0
 
-std::vector<struct body> vectorBody;
-std::vector<struct posChanged> vectorPosChanged;
+std::vector<Body> vectorBody;
+std::vector<Position> vectorPosChanged;
 
 int main(void) {
     // il servizio di cui necessitiamo è uno schermo a video
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("ERROR IN VIDEO INIT: %s\n", SDL_GetError());
-        return 1;
-    }
+    SDL sdl;
+    sdl.init();
 
-    // creiamo la finestra
-    SDL_Window* window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-                                          DIM_H, DIM_V, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
-        printf("ERROR IN WINDOW INIT: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        return 1;
-    }
-
-    // creiamo il renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    if (renderer == NULL) {
-        printf("ERROR IN SCREEN INIT: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_DestroyRenderer(renderer);
-        return 1;
-    }
+    SDL_Window* window = sdl.initWindow();
+    
+    SDL_Renderer* renderer = sdl.initRenderer(window);
 
     // creiamo l'evento su cui ci mettiamo in ascolto
     SDL_Event event;
     SDL_WaitEvent(&event);
 
     // creiamo il rettangolo con le coordinate di partenza e la direzione : pivot
-    SDL_FRect rect1 = {0, 0, L, L};
-    std::string direction = "";
-    struct body pivot;
-    pivot.rect = rect1;
-    pivot.direction = direction;
+    Body pivot = {0, 0, L, L, ""};
     // aggiungiamo il rettangolo al vettore
     vectorBody.push_back(pivot);
 
     // creiamo il food e l'ostacolo
-    SDL_FRect food = {0, 100, L, L}; 
-    SDL_FRect obstacle = {100, 0, L, L};
+    Square food = Square(0, 100, L, L); 
+    Square obstacle = Square(100, 0, L, L);
 
     // variabile del ciclo principale
     bool end = false;
@@ -92,21 +68,21 @@ int main(void) {
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
 
-                if (direction == "") {
+                if (pivot.getDirection() == "") {
                     printf("caso direction == ""\n");
-                    direction = "SDLK_DOWN";
-                    vectorBody[0].direction = "SDLK_DOWN";
+                    vectorBody[0].setDirection("SDLK_DOWN");
                 }
-
-                nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_DOWN");
+                
+                Square pivot = Square(vectorBody[0].rect);
+                nextMove = nextMoveIsRect(pivot, food, obstacle, "SDLK_DOWN");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // ricavo delle nuove coordinate randomiche e riposiziono food
-                    struct pos coord;
-                    coord = getNewCoordinates();
+                    Position newCoord = Position(0, 0, "");
+                    newCoord = newCoord.getNewCoordinates();
 
-                    food.x = coord.x;
-                    food.y = coord.y;
+                    food.setX(newCoord.getX());
+                    food.setY(newCoord.getY());
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -131,21 +107,20 @@ int main(void) {
             // mi muovo in alto
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_UP) {
 
-                if (direction == "") {
+                if (pivot.getDirection() == "") {
                     printf("caso direction == ""\n");
-                    direction = "SDLK_UP";
-                    vectorBody[0].direction = "SDLK_UP";
+                    vectorBody[0].setDirection("SDLK_UP");
                 }
 
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_UP");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // ricavo delle nuove coordinate randomiche e riposiziono food
-                    struct pos coord;
-                    coord = getNewCoordinates();
+                    Position newCoord = Position(0, 0, "");
+                    newCoord = newCoord.getNewCoordinates();
 
-                    food.x = coord.x;
-                    food.y = coord.y;
+                    food.setX(newCoord.getX());
+                    food.setY(newCoord.getY());
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -170,21 +145,20 @@ int main(void) {
             // mi muovo a sinistra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
 
-                if (direction == "") {
+                if (pivot.getDirection() == "") {
                     printf("caso direction == ""\n");
-                    direction = "SDLK_LEFT";
-                    vectorBody[0].direction = "SDLK_LEFT";
+                    vectorBody[0].setDirection("SDLK_LEFT");
                 }
 
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_LEFT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // ricavo delle nuove coordinate randomiche e riposiziono food
-                    struct pos coord;
-                    coord = getNewCoordinates();
+                    Position newCoord = Position(0, 0, "");
+                    newCoord = newCoord.getNewCoordinates();
 
-                    food.x = coord.x;
-                    food.y = coord.y;
+                    food.setX(newCoord.getX());
+                    food.setY(newCoord.getY());
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -209,21 +183,20 @@ int main(void) {
             // mi muovo a destra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
 
-                if (direction == "") {
+                if (pivot.getDirection() == "") {
                     printf("caso direction == ""\n");
-                    direction = "SDLK_RIGHT";
-                    vectorBody[0].direction = "SDLK_RIGHT";
+                    vectorBody[0].setDirection("SDLK_RIGHT");
                 }
 
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_RIGHT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // ricavo delle nuove coordinate randomiche e riposiziono food
-                    struct pos coord;
-                    coord = getNewCoordinates();
+                    Position newCoord = Position(0, 0, "");
+                    newCoord = newCoord.getNewCoordinates();
 
-                    food.x = coord.x;
-                    food.y = coord.y;
+                    food.setX(newCoord.getX());
+                    food.setY(newCoord.getY());
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -255,12 +228,12 @@ int main(void) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
         // Disegna le linee verticali della griglia
-        for (int x = CELL_SIZE; x < DIM_V; x += CELL_SIZE) {
+        for (int x = L; x < DIM_V; x += L) {
             SDL_RenderDrawLine(renderer, x, 0, x, DIM_H);
         }
 
         // Disegna le linee orizzontali della griglia
-        for (int y = CELL_SIZE; y < DIM_H; y += CELL_SIZE) {
+        for (int y = L; y < DIM_H; y += L) {
             SDL_RenderDrawLine(renderer, 0, y, DIM_V, y);
         }
 
@@ -272,18 +245,16 @@ int main(void) {
 
         // setto il colore del food
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRectF(renderer, &food);
+        SDL_RenderFillRectF(renderer, &(food.rect));
 
         // setto il colore dell'ostacolo
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_RenderFillRectF(renderer, &obstacle);
+        SDL_RenderFillRectF(renderer, &(obstacle.rect));
 
         // applico al renderer
         SDL_RenderPresent(renderer);
     }
 
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    printf("Exiting ...");
+    sdl.destroyAll(window, renderer);
     return 0;
 }

@@ -1,0 +1,59 @@
+#include <string>
+#include <SDL.h>
+#include "Positions_temp.h"
+
+#define L 20
+#define DIM_H 600 //componente orizzontale della risoluzione
+#define DIM_V 600 //componente verticale della risoluzione
+
+// questa classe serve a tener traccia delle posizioni di snake
+
+Position::Position(float x, float y, std::string direction) {
+    this->x = x;
+    this->y = y;
+    this->direction = direction;
+}
+
+float Position::getX() {
+    return this->x;
+}
+
+float Position::getY() {
+    return this->y;
+}
+
+std::string Position::getDirection() {
+    return this->direction;
+}
+
+void Position::setX(float x) {
+    this->x = x;
+    return;
+}
+
+void Position::setY(float y) {
+    this->y = y;
+    return;
+}
+
+void Position::setDirection(std::string direction) {
+    this->direction = direction;
+    return;
+}
+
+Position Position::getNewCoordinates() {
+    int x = 0; int y = 0;
+    
+    while ((x%L != 0) == true || (x == DIM_H) == true) {
+        x = 0 + (rand() % (DIM_H -  0 + 1));
+    }
+
+    while ((y%L != 0)==true || (y == DIM_H) == true) {
+        y = 0 + (rand() % (DIM_H - 0 + 1));
+    }
+
+    float xF = (float)x;
+    float yF = (float)y;
+
+    return Position(xF, yF, "");
+}
