@@ -4,6 +4,9 @@
 
 // classe per definire un quadrato singolo che può essere una parte del corpo di snake
 // oppure parte di un ostacolo, o ancora il cibo
+Square::Square() {
+    this->rect = {0, 0, 0, 0};
+}
 
 Square::Square(SDL_FRect rect) {
     this->rect = rect;
@@ -21,11 +24,11 @@ float Square::getY() {
     return this->rect.y;
 }
 
-float Square::getW() {
+int Square::getW() {
     return this->rect.w;
 }
 
-float Square::getH() {
+int Square::getH() {
     return this->rect.h;
 }
 
@@ -59,4 +62,37 @@ void Body::setX(float x) {
 
 void Body::setY(float y) {
     this->rect.y = y;
+}
+
+Obstacle::Obstacle(Square rectAltSX) { // richiamo il costruttore di square
+    // inizializza tutti a rect per poi settare le coordinate con l'apposita funzione
+    this->rectAltSX = rectAltSX;
+    this->rectAltDX = Square(this->rectAltSX.getX(), this->rectAltSX.getY()+20, 20, 20);
+    this->rectDownSX = Square(this->rectAltSX.getX()+20, this->rectAltSX.getY(), 20, 20);
+    this->rectDownDX = Square(this->rectAltSX.getX()+20, this->rectAltSX.getY()+20, 20, 20);
+}
+
+void Obstacle::setCoordinates() {
+    // coordinate del quadrato in alto a destra
+    this->rectAltDX.setX(this->rectAltSX.getX()+1);
+
+    // coordinate del quadrato in basso a sinistra
+    this->rectDownSX.setY(this->rectAltSX.getY()-1);
+
+    //coordinate del quadrato in basso a destra
+    this->rectDownDX.setX(this->rectAltSX.getX()+1);
+    this->rectDownDX.setY(this->rectAltSX.getY()-1);
+}
+
+Square Obstacle::getRectAltSX() {
+    return this->rectAltSX;
+}
+Square Obstacle::getRectAltDX() {
+    return this->rectAltDX;
+}
+Square Obstacle::getRectDwnSX() {
+    return this->rectDownSX;
+}
+Square Obstacle::getRectDwnDX() {
+    return this->rectDownDX;
 }

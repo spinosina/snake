@@ -22,7 +22,7 @@
 // un obstacle, 2 altrimenti.
 // nel primo caso aumenta la sua dimensione, nel secondo fa terminare il loop
 // nel terzo non fa nulla: questo rappresenta il caso in cui non ci sono state intersezioni
-int nextMoveIsRect(Square rect, Square food, Square obstacle, std::string direction) {
+int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string direction) {
     // se c'è un'intersezione tra rect e food, food deve cambiare posizione e rect deve allungarsi
     if (direction == "SDLK_DOWN") 
         rect.setY(rect.getY() + L);
@@ -41,7 +41,10 @@ int nextMoveIsRect(Square rect, Square food, Square obstacle, std::string direct
         return 0;
     }
 
-    else if (rect.getX() == obstacle.getX() && rect.getY() == obstacle.getY()) 
+    else if ((rect.getX() == obstacle.rectAltSX.getX() || rect.getX() == obstacle.rectAltDX.getX() || 
+                rect.getX() == obstacle.rectDownSX.getX() || rect.getX() == obstacle.rectDownDX.getX())
+                && (rect.getY() == obstacle.rectAltSX.getY() || rect.getY() == obstacle.rectAltDX.getY() || 
+                rect.getY() == obstacle.rectDownSX.getY() || rect.getY() == obstacle.rectDownDX.getY())) 
         return 1;
     
     else
@@ -119,6 +122,7 @@ void onButtonMove(std::string direction) {
         else if (vectorBody[i].getDirection() == "SDLK_LEFT") {
                 vectorBody[i].rect.x -= L;
         }
+        printf("il pivot ha queste coordinate %f,%f\n", vectorBody[0].getX(), vectorBody[0].getY());
         checkIfOutOfWindow(i);
     }
     return;

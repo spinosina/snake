@@ -8,12 +8,13 @@
 class Square {
 public:
     SDL_FRect rect;
+    Square();
     Square(SDL_FRect rect);
     Square(float x, float y, int w, int h);
     float getX();
     float getY();
-    float getW();
-    float getH();
+    int getW();
+    int getH();
     void setX(float x);
     void setY(float y);
 };
@@ -30,4 +31,19 @@ public:
     void setY(float y);
 };
 
+// obstacle rappresenta un insieme di 4 rect a partire da square, le cui coordinate sono
+// posizionate in maniera tale da formare un unico grande quadrato
+class Obstacle : public Square {
+public:
+    Square rectAltSX;
+    Square rectAltDX;
+    Square rectDownSX;
+    Square rectDownDX;
+    Obstacle(Square rectAltSX);
+    void setCoordinates();
+    Square getRectAltSX();
+    Square getRectAltDX();
+    Square getRectDwnSX();
+    Square getRectDwnDX();
+};
 #endif

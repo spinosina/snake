@@ -4,7 +4,7 @@
 #include <string> 
 #include "Snake_temp.h"
 
-int nextMoveIsRect(Square rect, Square food, Square obstacle, std::string direction);
+int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string direction);
 std::string findInVectPos(Square rect);
 void checkIfOutOfWindow(int i);
 void onButtonMove(std::string direction);

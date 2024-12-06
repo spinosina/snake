@@ -46,8 +46,22 @@ int main(void) {
     vectorBody.push_back(pivot);
 
     // creiamo il food e l'ostacolo
-    Square food = Square(0, 100, L, L); 
-    Square obstacle = Square(100, 0, L, L);
+    Position posForFood = Position(0, 0, "");
+    posForFood = posForFood.getNewCoordinates();
+    //printf("%sle coordinate di food sono: %f,%f %s\n", YELLOW, posForFood.x, posForFood.getY(), RESET); 
+    Square food = Square(posForFood.x, posForFood.y, L, L); 
+
+    Position posForObstacle = Position(0, 0, "");
+    posForObstacle = posForObstacle.getNewCoordinates(); 
+    //printf("%sle coordinate di obsAltSX sono: %f,%f %s\n", GREEN, posForObstacle.x, posForObstacle.getY(), RESET);
+    Square obsAltSX = Square(posForObstacle.getX(), posForObstacle.getY(), L, L);
+    Obstacle obstacle = Obstacle(obsAltSX);
+
+    /*printf("%s queste sono le coord del quadrato AltSx: %f,%f\nqueste sono le coord del quadrato AltDx: %f,%f\nqueste sono le coord del quadrato DownSx: %f,%f\nqueste sono le coord del quadrato DownDx: %f,%f\n%s",
+            RED, obstacle.rectAltSX.getX(), obstacle.rectAltSX.getY(),
+            obstacle.rectAltDX.getX(), obstacle.rectAltDX.getY(),
+            obstacle.rectDownSX.getX(), obstacle.rectDownSX.getY(),
+            obstacle.rectDownDX.getX(), obstacle.rectDownDX.getY(), RESET);*/
 
     // variabile del ciclo principale
     bool end = false;
@@ -249,7 +263,13 @@ int main(void) {
 
         // setto il colore dell'ostacolo
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_RenderFillRectF(renderer, &(obstacle.rect));
+        SDL_RenderFillRectF(renderer, &(obstacle.rectAltSX.rect));
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderFillRectF(renderer, &(obstacle.rectAltDX.rect));
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderFillRectF(renderer, &(obstacle.rectDownSX.rect));
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderFillRectF(renderer, &(obstacle.rectDownDX.rect));
 
         // applico al renderer
         SDL_RenderPresent(renderer);
