@@ -40,28 +40,19 @@ int main(void) {
     SDL_Event event;
     SDL_WaitEvent(&event);
 
+    // inizializziamo il generatore di numeri casuali
+    srand(time(NULL));
+
     // creiamo il rettangolo con le coordinate di partenza e la direzione : pivot
     Body pivot = {0, 0, L, L, ""};
     // aggiungiamo il rettangolo al vettore
     vectorBody.push_back(pivot);
 
-    // creiamo il food e l'ostacolo
-    Position posForFood = Position(0, 0, "");
-    posForFood = posForFood.getNewCoordinates();
-    //printf("%sle coordinate di food sono: %f,%f %s\n", YELLOW, posForFood.x, posForFood.getY(), RESET); 
-    Square food = Square(posForFood.x, posForFood.y, L, L); 
-
-    Position posForObstacle = Position(0, 0, "");
-    posForObstacle = posForObstacle.getNewCoordinates(); 
-    //printf("%sle coordinate di obsAltSX sono: %f,%f %s\n", GREEN, posForObstacle.x, posForObstacle.getY(), RESET);
-    Square obsAltSX = Square(posForObstacle.getX(), posForObstacle.getY(), L, L);
-    Obstacle obstacle = Obstacle(obsAltSX);
-
-    /*printf("%s queste sono le coord del quadrato AltSx: %f,%f\nqueste sono le coord del quadrato AltDx: %f,%f\nqueste sono le coord del quadrato DownSx: %f,%f\nqueste sono le coord del quadrato DownDx: %f,%f\n%s",
-            RED, obstacle.rectAltSX.getX(), obstacle.rectAltSX.getY(),
-            obstacle.rectAltDX.getX(), obstacle.rectAltDX.getY(),
-            obstacle.rectDownSX.getX(), obstacle.rectDownSX.getY(),
-            obstacle.rectDownDX.getX(), obstacle.rectDownDX.getY(), RESET);*/
+    // creiamo il food e l'ostacolo 
+    Square food = Square(0, 0, L, L); 
+    food.updatePos();
+    
+    Obstacle obstacle = Obstacle();
 
     // variabile del ciclo principale
     bool end = false;
@@ -91,12 +82,8 @@ int main(void) {
                 nextMove = nextMoveIsRect(pivot, food, obstacle, "SDLK_DOWN");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
-                    // ricavo delle nuove coordinate randomiche e riposiziono food
-                    Position newCoord = Position(0, 0, "");
-                    newCoord = newCoord.getNewCoordinates();
-
-                    food.setX(newCoord.getX());
-                    food.setY(newCoord.getY());
+                    // riposiziono food
+                    food.updatePos();
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -129,12 +116,8 @@ int main(void) {
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_UP");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
-                    // ricavo delle nuove coordinate randomiche e riposiziono food
-                    Position newCoord = Position(0, 0, "");
-                    newCoord = newCoord.getNewCoordinates();
-
-                    food.setX(newCoord.getX());
-                    food.setY(newCoord.getY());
+                    // riposiziono food
+                    food.updatePos();
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -167,12 +150,8 @@ int main(void) {
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_LEFT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
-                    // ricavo delle nuove coordinate randomiche e riposiziono food
-                    Position newCoord = Position(0, 0, "");
-                    newCoord = newCoord.getNewCoordinates();
-
-                    food.setX(newCoord.getX());
-                    food.setY(newCoord.getY());
+                    // riposiziono food
+                    food.updatePos();
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);
@@ -205,12 +184,8 @@ int main(void) {
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_RIGHT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
-                    // ricavo delle nuove coordinate randomiche e riposiziono food
-                    Position newCoord = Position(0, 0, "");
-                    newCoord = newCoord.getNewCoordinates();
-
-                    food.setX(newCoord.getX());
-                    food.setY(newCoord.getY());
+                    // riposiziono food
+                    food.updatePos();
 
                     // snake cresce
                     growing(vectorBody[vectorBody.size()-1]);

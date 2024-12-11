@@ -1,6 +1,11 @@
 #include <string>
 #include "Snake_temp.h"
+#include "Positions_temp.h"
 #include <SDL.h>
+
+#define L 20
+#define DIM_H 600 //componente orizzontale della risoluzione
+#define DIM_V 600 //componente verticale della risoluzione
 
 // classe per definire un quadrato singolo che può essere una parte del corpo di snake
 // oppure parte di un ostacolo, o ancora il cibo
@@ -14,6 +19,13 @@ Square::Square(SDL_FRect rect) {
 Square::Square(float x, float y, int w, int h) {
     this->rect.x = x; this->rect.y = y;
     this->rect.w = w; this->rect.h = h;
+}
+
+void Square::updatePos() {
+    Position posForFood = Position(0, 0, "");
+    posForFood = posForFood.getNewCoordinates();
+    this->setX(posForFood.x);
+    this->setY(posForFood.y);
 }
 
 float Square::getX() {
@@ -64,12 +76,22 @@ void Body::setY(float y) {
     this->rect.y = y;
 }
 
-Obstacle::Obstacle(Square rectAltSX) { // richiamo il costruttore di square
+Obstacle::Obstacle() { // richiamo il costruttore di square
     // inizializza tutti a rect per poi settare le coordinate con l'apposita funzione
-    this->rectAltSX = rectAltSX;
-    this->rectAltDX = Square(this->rectAltSX.getX(), this->rectAltSX.getY()+20, 20, 20);
-    this->rectDownSX = Square(this->rectAltSX.getX()+20, this->rectAltSX.getY(), 20, 20);
-    this->rectDownDX = Square(this->rectAltSX.getX()+20, this->rectAltSX.getY()+20, 20, 20);
+    Position posForObstacle = Position(0, 0, "");
+    posForObstacle = posForObstacle.getNewCoordinates(); 
+
+    // controllo se il quadratone esce dalla finestra
+    int x = 0, y = 0;
+    while ( ((x%L != 0) || (x == DIM_H)) && (((x+20)%L != 0) || ((x+20) == DIM_H)) 
+        && ((y%L != 0) || (y == DIM_H)) && (((y+20)%L != 0) || ((y+20) == DIM_V))) {
+            posForObstacle = posForObstacle.getNewCoordinates();
+    }
+
+    this->rectAltSX = Square(posForObstacle.getX(), posForObstacle.getY(), L, L);
+    this->rectAltDX = Square(this->rectAltSX.getX(), this->rectAltSX.getY()+L, L, L);
+    this->rectDownSX = Square(this->rectAltSX.getX()+L, this->rectAltSX.getY(), L, L);
+    this->rectDownDX = Square(this->rectAltSX.getX()+L, this->rectAltSX.getY()+L, L, L);
 }
 
 void Obstacle::setCoordinates() {

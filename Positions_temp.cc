@@ -1,6 +1,7 @@
 #include <string>
 #include <SDL.h>
 #include "Positions_temp.h"
+#include "globals_temp.h"
 
 #define L 20
 #define DIM_H 600 //componente orizzontale della risoluzione
@@ -44,15 +45,13 @@ void Position::setDirection(std::string direction) {
 Position Position::getNewCoordinates() {
     int x=-1; int y=-1;
     
-    while ((x%L != 0) == true || (x == DIM_H) == true) {
+    while ((x%L != 0) == true || (x == DIM_H) == true || (x == vectorBody[0].rect.x) == true) {
         x = 0 + (rand() % (DIM_H -  0 + 1));
     }
 
-    while ((y%L != 0)==true || (y == DIM_H) == true) {
+    while ((y%L != 0)==true || (y == DIM_H) == true || (y == vectorBody[0].rect.y) == true) {
         y = 0 + (rand() % (DIM_H - 0 + 1));
     }
-
-    printf("nuove coordinate calcolate %d, %d\n", x, y);
 
     float xF = (float)x;
     float yF = (float)y;

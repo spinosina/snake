@@ -11,6 +11,7 @@ public:
     Square();
     Square(SDL_FRect rect);
     Square(float x, float y, int w, int h);
+    void updatePos();
     float getX();
     float getY();
     int getW();
@@ -39,7 +40,7 @@ public:
     Square rectAltDX;
     Square rectDownSX;
     Square rectDownDX;
-    Obstacle(Square rectAltSX);
+    Obstacle();
     void setCoordinates();
     Square getRectAltSX();
     Square getRectAltDX();

@@ -37,6 +37,7 @@ int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string dire
         rect.setX(rect.getX() - L);
         
     if (rect.getX() == food.getX() && rect.getY() == food.getY()) {
+        printf("%scollision con food %s\n", YELLOW, RESET);
         onButtonMove(direction);
         return 0;
     }
