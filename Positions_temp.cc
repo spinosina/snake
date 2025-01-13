@@ -56,7 +56,7 @@ Position Position::getNewCoordinates() {
     float xF = (float)x;
     float yF = (float)y;
 
-    printf("nuove coordinate calcolate %f, %f\n", xF, yF);
+    printf("\n\nnuove coordinate calcolate %f, %f\n", xF, yF);
 
     return Position(xF, yF, "");
 }

@@ -77,33 +77,28 @@ void Body::setY(float y) {
 }
 
 Obstacle::Obstacle() { // richiamo il costruttore di square
-    // inizializza tutti a rect per poi settare le coordinate con l'apposita funzione
-    Position posForObstacle = Position(0, 0, "");
-    posForObstacle = posForObstacle.getNewCoordinates(); 
 
-    // controllo se il quadratone esce dalla finestra
-    int x = 0, y = 0;
-    while ( ((x%L != 0) || (x == DIM_H)) && (((x+20)%L != 0) || ((x+20) == DIM_H)) 
-        && ((y%L != 0) || (y == DIM_H)) && (((y+20)%L != 0) || ((y+20) == DIM_V))) {
-            posForObstacle = posForObstacle.getNewCoordinates();
-    }
-
-    this->rectAltSX = Square(posForObstacle.getX(), posForObstacle.getY(), L, L);
+    // inizializza tutti gli Square partendo da quello in alto a SX che viene generato casualmente
+    this->rectAltSX.updatePos();
     this->rectAltDX = Square(this->rectAltSX.getX(), this->rectAltSX.getY()+L, L, L);
     this->rectDownSX = Square(this->rectAltSX.getX()+L, this->rectAltSX.getY(), L, L);
     this->rectDownDX = Square(this->rectAltSX.getX()+L, this->rectAltSX.getY()+L, L, L);
 }
 
 void Obstacle::setCoordinates() {
+    printf("setCoordinates() quadrato alto sinistra: %f,%f\n", this->rectAltSX.getX(), this->rectAltSX.getY());
+
     // coordinate del quadrato in alto a destra
-    this->rectAltDX.setX(this->rectAltSX.getX()+1);
+    this->rectAltDX.setX(this->rectAltSX.getX()+L);
+    this->rectAltDX.setY(this->rectAltSX.getY());
 
     // coordinate del quadrato in basso a sinistra
-    this->rectDownSX.setY(this->rectAltSX.getY()-1);
+    this->rectDownSX.setX(this->rectAltSX.getX());
+    this->rectDownSX.setY(this->rectAltSX.getY()-L);
 
     //coordinate del quadrato in basso a destra
-    this->rectDownDX.setX(this->rectAltSX.getX()+1);
-    this->rectDownDX.setY(this->rectAltSX.getY()-1);
+    this->rectDownDX.setX(this->rectAltSX.getX()+L);
+    this->rectDownDX.setY(this->rectAltSX.getY()-L);
 }
 
 Square Obstacle::getRectAltSX() {

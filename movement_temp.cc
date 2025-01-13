@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctime>
 #include <iostream>
+#include <thread>
 
 #include "movement_temp.h"
 #include "Snake_temp.h"
@@ -146,5 +147,22 @@ void removeUselessPos() {
             vectorPosChanged.erase(vectorPosChanged.begin());
     }
     printf("%sla size di vectorPosChanged: %zu %s\n", YELLOW, vectorPosChanged.size(), RESET);
+    return;
+}
+
+void moveObstacle(Obstacle& obstacle) {
+
+    while(!endThread) {
+        
+        obstacle.rectAltSX.updatePos();
+        obstacle.setCoordinates();
+
+        printf("%scoordinate square alto sinistra: %f,%f\n", RED, obstacle.getRectAltSX().getX(), obstacle.getRectAltSX().getY());
+        printf("%scoordinate square alto destra: %f,%f\n", GREEN, obstacle.getRectAltDX().getX(), obstacle.getRectAltDX().getY());
+        printf("%scoordinate square basso sinistra: %f,%f\n", BLUE, obstacle.getRectDwnSX().getX(), obstacle.getRectDwnSX().getY());
+        printf("%scoordinate square basso destra: %f,%f\n", YELLOW, obstacle.getRectDwnDX().getX(), obstacle.getRectDwnDX().getY());
+
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+    }
     return;
 }

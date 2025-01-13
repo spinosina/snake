@@ -9,5 +9,5 @@ std::string findInVectPos(Square rect);
 void checkIfOutOfWindow(int i);
 void onButtonMove(std::string direction);
 void removeUselessPos();
-
+void moveObstacle(Obstacle& obstacle);
 #endif

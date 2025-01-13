@@ -3,6 +3,7 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 #include "movement_temp.h"
 #include "growth_temp.h"
@@ -26,6 +27,7 @@
 
 std::vector<Body> vectorBody;
 std::vector<Position> vectorPosChanged;
+bool endThread = false;
 
 int main(void) {
     // il servizio di cui necessitiamo è uno schermo a video
@@ -53,6 +55,9 @@ int main(void) {
     food.updatePos();
     
     Obstacle obstacle = Obstacle();
+    
+    //lancio il thread di aggiornamento posizione
+    std::thread positionThread(moveObstacle, std::ref(obstacle));
 
     // variabile del ciclo principale
     bool end = false;
@@ -67,8 +72,10 @@ int main(void) {
     while (!end) {
         while(SDL_PollEvent(&event)) {
             // usciamo al click sulla x
-            if (event.type == SDL_QUIT)
+            if (event.type == SDL_QUIT) {
                 end = true;
+                endThread = true;
+            }
 
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
@@ -92,6 +99,7 @@ int main(void) {
                 // caso in cui rect incontra un ostacolo 
                 else if (nextMove == 1) {
                     end = true;
+                    endThread = true;
                 }
 
                 // caso in cui non ci sono intersezioni
@@ -126,6 +134,7 @@ int main(void) {
                 // caso in cui rect incontra un ostacolo 
                 else if (nextMove == 1) {
                     end = true;
+                    endThread = true;
                 } 
 
                 // caso in cui non ci sono intersezioni
@@ -160,6 +169,7 @@ int main(void) {
                 // caso in cui rect incontra un ostacolo 
                 else if (nextMove == 1) {
                     end = true;
+                    endThread = true;
                 }
 
                 // caso in cui non ci sono intersezioni
@@ -194,6 +204,7 @@ int main(void) {
                 // caso in cui rect incontra un ostacolo 
                 else if (nextMove == 1) {
                     end = true;
+                    endThread = true;
                 }
 
                 // caso in cui non ci sono intersezioni
@@ -249,7 +260,9 @@ int main(void) {
         // applico al renderer
         SDL_RenderPresent(renderer);
     }
-
+    // Attendi la terminazione del thread
+    positionThread.join();
+    
     sdl.destroyAll(window, renderer);
     return 0;
 }
