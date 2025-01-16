@@ -11,6 +11,7 @@ public:
     Square();
     Square(SDL_FRect rect);
     Square(float x, float y, int w, int h);
+    void updatePosForFood();
     void updatePos();
     float getX();
     float getY();

@@ -153,8 +153,27 @@ void removeUselessPos() {
 void moveObstacle(Obstacle& obstacle) {
 
     while(!endThread) {
-        
-        obstacle.rectAltSX.updatePos();
+
+        bool collision = true;
+
+        // facciamo un check per controllare che questa nuova posizione non sovrapponga il food
+        // nè il body
+
+        while (collision) {
+
+            obstacle.rectAltSX.updatePos();
+
+            if ( (obstacle.rectAltSX.getX() == food.getX()) && (obstacle.rectAltSX.getY() == food.getY())
+                || (obstacle.rectAltDX.getX() == food.getX()) && (obstacle.rectAltDX.getY() == food.getY())
+                || (obstacle.rectDownSX.getX() == food.getX()) && (obstacle.rectDownSX.getY() == food.getY())
+                || (obstacle.rectDownDX.getX() == food.getX()) && (obstacle.rectDownDX.getY() == food.getY())) {
+
+                    obstacle.rectAltSX.updatePos();
+            }
+            else
+                collision = false;
+        }  
+
         obstacle.setCoordinates();
 
         printf("%scoordinate square alto sinistra: %f,%f\n", RED, obstacle.getRectAltSX().getX(), obstacle.getRectAltSX().getY());
@@ -162,7 +181,7 @@ void moveObstacle(Obstacle& obstacle) {
         printf("%scoordinate square basso sinistra: %f,%f\n", BLUE, obstacle.getRectDwnSX().getX(), obstacle.getRectDwnSX().getY());
         printf("%scoordinate square basso destra: %f,%f\n", YELLOW, obstacle.getRectDwnDX().getX(), obstacle.getRectDwnDX().getY());
 
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
     return;
 }

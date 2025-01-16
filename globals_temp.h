@@ -9,4 +9,5 @@
     extern std::vector<Body> vectorBody;
     extern std::vector<Position> vectorPosChanged;
     extern bool endThread;
+    extern Square food;
 #endif

@@ -21,11 +21,18 @@ Square::Square(float x, float y, int w, int h) {
     this->rect.w = w; this->rect.h = h;
 }
 
-void Square::updatePos() {
+void Square::updatePosForFood() {
     Position posForFood = Position(0, 0, "");
     posForFood = posForFood.getNewCoordinates();
     this->setX(posForFood.x);
     this->setY(posForFood.y);
+}
+
+void Square::updatePos() {
+    Position pos = Position(0, 0, "");
+    pos = pos.getNewCoordinates();
+    this->setX(pos.x);
+    this->setY(pos.y);
 }
 
 float Square::getX() {
@@ -79,6 +86,7 @@ void Body::setY(float y) {
 Obstacle::Obstacle() { // richiamo il costruttore di square
 
     // inizializza tutti gli Square partendo da quello in alto a SX che viene generato casualmente
+    this->rectAltSX = Square(0, 0, L, L);
     this->rectAltSX.updatePos();
     this->rectAltDX = Square(this->rectAltSX.getX(), this->rectAltSX.getY()+L, L, L);
     this->rectDownSX = Square(this->rectAltSX.getX()+L, this->rectAltSX.getY(), L, L);
@@ -94,11 +102,11 @@ void Obstacle::setCoordinates() {
 
     // coordinate del quadrato in basso a sinistra
     this->rectDownSX.setX(this->rectAltSX.getX());
-    this->rectDownSX.setY(this->rectAltSX.getY()-L);
+    this->rectDownSX.setY(this->rectAltSX.getY()+L);
 
     //coordinate del quadrato in basso a destra
     this->rectDownDX.setX(this->rectAltSX.getX()+L);
-    this->rectDownDX.setY(this->rectAltSX.getY()-L);
+    this->rectDownDX.setY(this->rectAltSX.getY()+L);
 }
 
 Square Obstacle::getRectAltSX() {

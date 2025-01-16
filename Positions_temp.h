@@ -16,5 +16,6 @@ public:
     void setY(float y);
     void setDirection(std::string direction);
     Position getNewCoordinates();
+    Position getNewCoordinatesForFood();
 };
 #endif

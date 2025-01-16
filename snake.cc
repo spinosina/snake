@@ -27,6 +27,7 @@
 
 std::vector<Body> vectorBody;
 std::vector<Position> vectorPosChanged;
+Square food = Square(0, 0, L, L);
 bool endThread = false;
 
 int main(void) {
@@ -50,10 +51,8 @@ int main(void) {
     // aggiungiamo il rettangolo al vettore
     vectorBody.push_back(pivot);
 
-    // creiamo il food e l'ostacolo 
-    Square food = Square(0, 0, L, L); 
-    food.updatePos();
-    
+    // randomizziamo la posizione di food e dell'ostacolo  
+    food.updatePosForFood();
     Obstacle obstacle = Obstacle();
     
     //lancio il thread di aggiornamento posizione

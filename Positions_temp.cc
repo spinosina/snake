@@ -42,7 +42,7 @@ void Position::setDirection(std::string direction) {
     return;
 }
 
-Position Position::getNewCoordinates() {
+Position Position::getNewCoordinatesForFood() {
     int x=-1; int y=-1;
     
     while ((x%L != 0) == true || (x == DIM_H) == true || (x == vectorBody[0].rect.x) == true) {
@@ -50,6 +50,25 @@ Position Position::getNewCoordinates() {
     }
 
     while ((y%L != 0)==true || (y == DIM_H) == true || (y == vectorBody[0].rect.y) == true) {
+        y = 0 + (rand() % (DIM_H - 0 + 1));
+    }
+
+    float xF = (float)x;
+    float yF = (float)y;
+
+    printf("\n\nnuove coordinate calcolate %f, %f\n", xF, yF);
+
+    return Position(xF, yF, "");
+}
+
+Position Position::getNewCoordinates() {
+    int x=-1; int y=-1;
+    
+    while ((x%L != 0) == true || (x == DIM_H) == true || (x == vectorBody[0].rect.x) == true || (x == food.getX() == true)) {
+        x = 0 + (rand() % (DIM_H -  0 + 1));
+    }
+
+    while ((y%L != 0)==true || (y == DIM_H) == true || (y == vectorBody[0].rect.y) == true || (y == food.getY() == true)) {
         y = 0 + (rand() % (DIM_H - 0 + 1));
     }
 
