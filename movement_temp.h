@@ -7,6 +7,7 @@
 int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string direction);
 std::string findInVectPos(Square rect);
 void checkIfOutOfWindow(int i);
+void moveSnake();
 void onButtonMove(std::string direction);
 void removeUselessPos();
 void moveObstacle(Obstacle& obstacle);

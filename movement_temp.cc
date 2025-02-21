@@ -89,6 +89,20 @@ void checkIfOutOfWindow(int i) {
     return;
 }
 
+void moveSnake() {
+    
+    while (!endThread) {
+        if (vectorBody[0].getDirection() == "")
+            printf("La direzione è vuota: ho appena iniziato\n");
+        else {
+            printf("La direzione è %s\n", vectorBody[0].direction.c_str());
+            onButtonMove(vectorBody[0].direction);
+        }
+    
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    return;
+}
 void onButtonMove(std::string direction) {
     std::string pivotDirectionBeforeChange = vectorBody[0].getDirection();
 
@@ -127,6 +141,7 @@ void onButtonMove(std::string direction) {
         printf("il pivot ha queste coordinate %f,%f\n", vectorBody[0].getX(), vectorBody[0].getY());
         checkIfOutOfWindow(i);
     }
+
     return;
 }
 
@@ -176,10 +191,10 @@ void moveObstacle(Obstacle& obstacle) {
 
         obstacle.setCoordinates();
 
-        printf("%scoordinate square alto sinistra: %f,%f\n", RED, obstacle.getRectAltSX().getX(), obstacle.getRectAltSX().getY());
-        printf("%scoordinate square alto destra: %f,%f\n", GREEN, obstacle.getRectAltDX().getX(), obstacle.getRectAltDX().getY());
-        printf("%scoordinate square basso sinistra: %f,%f\n", BLUE, obstacle.getRectDwnSX().getX(), obstacle.getRectDwnSX().getY());
-        printf("%scoordinate square basso destra: %f,%f\n", YELLOW, obstacle.getRectDwnDX().getX(), obstacle.getRectDwnDX().getY());
+        // printf("%scoordinate square alto sinistra: %f,%f\n", RED, obstacle.getRectAltSX().getX(), obstacle.getRectAltSX().getY());
+        // printf("%scoordinate square alto destra: %f,%f\n", GREEN, obstacle.getRectAltDX().getX(), obstacle.getRectAltDX().getY());
+        // printf("%scoordinate square basso sinistra: %f,%f\n", BLUE, obstacle.getRectDwnSX().getX(), obstacle.getRectDwnSX().getY());
+        // printf("%scoordinate square basso destra: %f,%f\n", YELLOW, obstacle.getRectDwnDX().getX(), obstacle.getRectDwnDX().getY());
 
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }

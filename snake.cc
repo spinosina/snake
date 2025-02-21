@@ -13,6 +13,7 @@
 #include "Positions_temp.h"
 #include "SDL_init.h"
 #include <SDL.h>
+#include <SDL_messagebox.h>
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -36,9 +37,18 @@ int main(void) {
     sdl.init();
 
     SDL_Window* window = sdl.initWindow();
-    
+
     SDL_Renderer* renderer = sdl.initRenderer(window);
 
+    if (TTF_Init() == -1) {
+        printf("Errore inizializzazione SDL_ttf: %s\n", TTF_GetError());
+        return -1;
+    }
+    TTF_Font* font = TTF_OpenFont("/System/Library/Fonts/Supplemental/Arial.ttf", 20);
+    if (!font) {
+        printf("Errore: il font non è stato caricato! %s\n", TTF_GetError());
+        return -1;
+    }
     // creiamo l'evento su cui ci mettiamo in ascolto
     SDL_Event event;
     SDL_WaitEvent(&event);
@@ -55,11 +65,17 @@ int main(void) {
     food.updatePosForFood();
     Obstacle obstacle = Obstacle();
     
-    //lancio il thread di aggiornamento posizione
+    //lancio il thread di aggiornamento posizione dell'ostacolo
     std::thread positionThread(moveObstacle, std::ref(obstacle));
+
+    //lancio il thread di spostamento dello snake
+    std::thread movingSnakeThread(moveSnake);
 
     // variabile del ciclo principale
     bool end = false;
+
+    // variabile dello score
+    int currentScore = 1;
 
     // variabile randomica
     std::srand(std::time(0));  // Inizializza il seme con l'ora corrente
@@ -83,11 +99,14 @@ int main(void) {
                     printf("caso direction == ""\n");
                     vectorBody[0].setDirection("SDLK_DOWN");
                 }
-                
+                 
                 Square pivot = Square(vectorBody[0].rect);
                 nextMove = nextMoveIsRect(pivot, food, obstacle, "SDLK_DOWN");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
+                    // incremento lo score
+                    currentScore++;
+
                     // riposiziono food
                     food.updatePos();
 
@@ -99,6 +118,7 @@ int main(void) {
                 else if (nextMove == 1) {
                     end = true;
                     endThread = true;
+                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                 }
 
                 // caso in cui non ci sono intersezioni
@@ -123,6 +143,9 @@ int main(void) {
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_UP");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
+                    // incremento lo score
+                    currentScore++;
+
                     // riposiziono food
                     food.updatePos();
 
@@ -134,6 +157,7 @@ int main(void) {
                 else if (nextMove == 1) {
                     end = true;
                     endThread = true;
+                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                 } 
 
                 // caso in cui non ci sono intersezioni
@@ -158,6 +182,9 @@ int main(void) {
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_LEFT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
+                    // incremento lo score
+                    currentScore++;
+
                     // riposiziono food
                     food.updatePos();
 
@@ -169,6 +196,7 @@ int main(void) {
                 else if (nextMove == 1) {
                     end = true;
                     endThread = true;
+                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                 }
 
                 // caso in cui non ci sono intersezioni
@@ -193,6 +221,9 @@ int main(void) {
                 nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_RIGHT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
+                    // incremento lo score
+                    currentScore++;
+
                     // riposiziono food
                     food.updatePos();
 
@@ -204,6 +235,7 @@ int main(void) {
                 else if (nextMove == 1) {
                     end = true;
                     endThread = true;
+                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                 }
 
                 // caso in cui non ci sono intersezioni
@@ -256,11 +288,17 @@ int main(void) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderFillRectF(renderer, &(obstacle.rectDownDX.rect));
 
+        sdl.drawInfoBar(renderer, font, currentScore);
         // applico al renderer
         SDL_RenderPresent(renderer);
     }
+    printf("FINAL SCORE = %d\n", currentScore);
+    const char* finalScore = "FINAL SCORE: " + currentScore;
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", finalScore, window);
+
     // Attendi la terminazione del thread
     positionThread.join();
+    movingSnakeThread.join();
     
     sdl.destroyAll(window, renderer);
     return 0;
