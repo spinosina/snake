@@ -10,4 +10,6 @@
     extern std::vector<Position> vectorPosChanged;
     extern bool endThread;
     extern Square food;
+    extern Pivot pivot;
+    extern int currentScore;
 #endif

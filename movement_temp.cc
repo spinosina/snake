@@ -67,48 +67,139 @@ std::string findInVectPos(Square rect) {
 // window, quindi quando le coordinate sono <0 o >DIM_H (che è la componente di altezza massima)
 // o >DIM_V (che è la componente di ampiezza massima)
 void checkIfOutOfWindow(int i) {
-    if (vectorBody[i].getX() < 0) {
-        vectorBody[i].rect.x = DIM_H;
-        printf("la x era < 0, ora è: %f", vectorBody[i].getX());
-    } 
-    
-    else if (vectorBody[i].getX() == DIM_H) {
-        vectorBody[i].rect.x = 0;
-        printf("la x era > MAX, ora è: %f", vectorBody[i].getX());
-    } 
-    
-    else if (vectorBody[i].getY() < 0) {
-        vectorBody[i].rect.y = DIM_V;
-        printf("la y era < 0, ora è: %f", vectorBody[i].getY());
-    }
-    
-    else if (vectorBody[i].getY() == DIM_H) {
-        vectorBody[i].rect.y = 0;
-        printf("la y era > MAX, ora è: %f", vectorBody[i].getY());
+    if (i != -1) {
+        if (vectorBody[i].getX() < 0) {
+            vectorBody[i].rect.x = DIM_H;
+            printf("la x era < 0, ora è: %f", vectorBody[i].getX());
+        } 
+        
+        else if (vectorBody[i].getX() == DIM_H) {
+            vectorBody[i].rect.x = 0;
+            printf("la x era > MAX, ora è: %f", vectorBody[i].getX());
+        } 
+        
+        else if (vectorBody[i].getY() < 0) {
+            vectorBody[i].rect.y = DIM_V;
+            printf("la y era < 0, ora è: %f", vectorBody[i].getY());
+        }
+        
+        else if (vectorBody[i].getY() == DIM_H) {
+            vectorBody[i].rect.y = 0;
+            printf("la y era > MAX, ora è: %f", vectorBody[i].getY());
+        }
+    } else {
+        if (pivot.getX() < 0) {
+            pivot.rect.x = DIM_H;
+            printf("la x era < 0, ora è: %f", pivot.getX());
+        } 
+        
+        else if (pivot.getX() == DIM_H) {
+            pivot.rect.x = 0;
+            printf("la x era > MAX, ora è: %f", pivot.getX());
+        } 
+        
+        else if (pivot.getY() < 0) {
+            pivot.rect.y = DIM_V;
+            printf("la y era < 0, ora è: %f", pivot.getY());
+        }
+        
+        else if (pivot.getY() == DIM_H) {
+            pivot.rect.y = 0;
+            printf("la y era > MAX, ora è: %f", pivot.getY());
+        }
     }
     return;
 }
 
 void moveSnake() {
-    
+    //int nextMove = -1;
     while (!endThread) {
-        if (vectorBody[0].getDirection() == "")
+        if (pivot.direction.load() == -1)
             printf("La direzione è vuota: ho appena iniziato\n");
         else {
-            printf("La direzione è %s\n", vectorBody[0].direction.c_str());
-            onButtonMove(vectorBody[0].direction);
+            /*nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_DOWN");
+            // caso in cui rect mangia food
+            if (nextMove == 0) {
+                // incremento lo score
+                currentScore++;
+
+                // riposiziono food
+                food.updatePos();
+
+                // snake cresce
+                if (vectorBody.size() == 0) {
+                    Body newBody = {pivot.rect.x, pivot.rect.y-L, L, L, "SDLK_DOWN"};
+                    vectorBody.push_back(newBody);
+                }
+                    
+                else
+                    growing(vectorBody[vectorBody.size()-1]);
+            }
+
+            // caso in cui rect incontra un ostacolo 
+            else if (nextMove == 1) {
+                end = true;
+                endThread = true;
+                //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
+            }
+
+            // caso in cui non ci sono intersezioni
+            else {
+                if (vectorBody.size() == 0)
+                    pivot.rect.y += L;
+                else {
+                    onButtonMove("SDLK_DOWN");
+                    removeUselessPos();
+                }
+            } */
+            std::string currDir = "";
+            switch (pivot.direction.load())
+            {
+            case 1:
+                currDir = "SDLK_UP";
+                break;
+            case 2:
+                currDir = "SDLK_RIGHT";
+                break;
+            case 3:
+                currDir = "SDLK_DOWN";
+                break;
+            case 4:
+                currDir = "SDLK_LEFT";
+                break;
+            }
+            printf("La direzione è %s\n", currDir.c_str());
+            onButtonMove(currDir);
         }
     
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     return;
 }
+
 void onButtonMove(std::string direction) {
-    std::string pivotDirectionBeforeChange = vectorBody[0].getDirection();
+    std::string pivotDirectionBeforeChange = "";
+
+    switch (pivot.direction.load())
+    {
+    case 1:
+        pivotDirectionBeforeChange = "SDLK_UP";
+        break;
+    case 2:
+        pivotDirectionBeforeChange = "SDLK_RIGHT";
+        break;
+    case 3:
+        pivotDirectionBeforeChange = "SDLK_DOWN";
+        break;
+    case 4:
+        pivotDirectionBeforeChange = "SDLK_LEFT";
+        break;
+    }
+        
 
     // aggiungo il punto di svolta al vettore vectorPosChanged
     if (pivotDirectionBeforeChange != direction) {
-        Position directionChanged = Position(vectorBody[0].getX(), vectorBody[0].getY(), direction);
+        Position directionChanged = Position(pivot.rect.x, pivot.rect.y, direction);
         vectorPosChanged.push_back(directionChanged);
     }
 
@@ -138,9 +229,48 @@ void onButtonMove(std::string direction) {
         else if (vectorBody[i].getDirection() == "SDLK_LEFT") {
                 vectorBody[i].rect.x -= L;
         }
-        printf("il pivot ha queste coordinate %f,%f\n", vectorBody[0].getX(), vectorBody[0].getY());
         checkIfOutOfWindow(i);
     }
+    
+    // alla fine del ciclo che parte dalla fine del serpente alla testa (il pivot)
+    // rifaccio tutte le azioni sul pivot 
+    if (vectorPosChanged.size() != 0) {
+        // per ogni elemento cerco se si trova in un punto di svolta
+        std::string found = findInVectPos(pivot.rect);
+
+        if (found != "NotFound"){
+            printf("New direction: %s\n", found.c_str());
+
+            int directionInt = -1;
+            if (strcmp(found.c_str(), "SDLK_UP")==0)
+                directionInt = 1;
+            else if (strcmp(found.c_str(), "SDLK_RIGHT")==0)
+                directionInt = 2;
+            else if (strcmp(found.c_str(), "SDLK_DOWN")==0)
+                directionInt = 3;
+            else if (strcmp(found.c_str(), "SDLK_LEFT")==0)
+                directionInt = 4;
+
+            pivot.direction.store(directionInt, std::memory_order_relaxed);
+        }
+        else 
+            printf("Element not found.\n");
+    }
+    if (pivot.direction.load(std::memory_order_relaxed) == 3) {
+        pivot.rect.y += L;
+    }
+    else if (pivot.direction.load(std::memory_order_relaxed) == 1) {
+            pivot.rect.y -= L;
+    }
+    else if (pivot.direction.load(std::memory_order_relaxed) == 2) {
+            pivot.rect.x += L;
+    }
+    else if (pivot.direction.load(std::memory_order_relaxed) == 4) {
+            pivot.rect.x -= L;
+    }
+
+    checkIfOutOfWindow(-1);
+    printf("il pivot ha queste coordinate %f,%f\n", pivot.rect.x, pivot.rect.y);
 
     return;
 }

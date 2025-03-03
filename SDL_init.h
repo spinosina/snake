@@ -55,13 +55,13 @@ public:
         // Disegno il rettangolo della barra inferiore
         // {0, 650-50, 600, 50}
         SDL_Rect infoBar = {0, DIM_V - DIM_V_TESTO, DIM_H_TESTO, DIM_V_TESTO};
-        SDL_SetRenderDrawColor(renderer, 200, 75, 50, 255);  // Grigio chiaro
+        SDL_SetRenderDrawColor(renderer, 95, 158, 160, 255);  // Grigio chiaro
         SDL_RenderFillRect(renderer, &infoBar);
     
         // Scrivi del testo nella barra inferiore
-        SDL_Color white = {255, 255, 255, 255};
+        SDL_Color black = {0, 0, 0, 255};
         std::string currentScore = "Current Score:  " + std::to_string(score); 
-        SDL_Surface* textSurface = TTF_RenderText_Solid(font, currentScore.c_str(), white);
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font, currentScore.c_str(), black);
         if (textSurface == NULL) {
             printf("textSurface è NULL");
             return;

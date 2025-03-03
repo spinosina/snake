@@ -49,6 +49,13 @@
         "__node_handle": "cpp",
         "charconv": "cpp",
         "optional": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "thread": "cpp",
+        "deque": "cpp",
+        "memory": "cpp",
+        "forward_list": "cpp",
+        "print": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     }, // Compilatore di default
 }

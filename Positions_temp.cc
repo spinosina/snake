@@ -45,11 +45,11 @@ void Position::setDirection(std::string direction) {
 Position Position::getNewCoordinatesForFood() {
     int x=-1; int y=-1;
     
-    while ((x%L != 0) == true || (x == DIM_H) == true || (x == vectorBody[0].rect.x) == true) {
+    while ((x%L != 0) == true || (x == DIM_H) == true || (x == pivot.rect.x) == true) {
         x = 0 + (rand() % (DIM_H -  0 + 1));
     }
 
-    while ((y%L != 0)==true || (y == DIM_H) == true || (y == vectorBody[0].rect.y) == true) {
+    while ((y%L != 0)==true || (y == DIM_H) == true || (y == pivot.rect.y) == true) {
         y = 0 + (rand() % (DIM_H - 0 + 1));
     }
 
@@ -64,11 +64,11 @@ Position Position::getNewCoordinatesForFood() {
 Position Position::getNewCoordinates() {
     int x=-1; int y=-1;
     
-    while ((x%L != 0) == true || (x == DIM_H) == true || (x == vectorBody[0].rect.x) == true || (x == food.getX() == true)) {
+    while ((x%L != 0) == true || (x == DIM_H) == true || (x == pivot.rect.x) == true || (x == food.getX() == true)) {
         x = 0 + (rand() % (DIM_H -  0 + 1));
     }
 
-    while ((y%L != 0)==true || (y == DIM_H) == true || (y == vectorBody[0].rect.y) == true || (y == food.getY() == true)) {
+    while ((y%L != 0)==true || (y == DIM_H) == true || (y == pivot.rect.y) == true || (y == food.getY() == true)) {
         y = 0 + (rand() % (DIM_H - 0 + 1));
     }
 

@@ -29,6 +29,15 @@
 std::vector<Body> vectorBody;
 std::vector<Position> vectorPosChanged;
 Square food = Square(0, 0, L, L);
+
+// creiamo il pivot con le coordinate di partenza e la direzione : pivot
+// -1 == nessuna direzione
+// 1 == up, 2 == right, 3 == down, 4 == left
+Pivot pivot(0.0, 0.0, L, L, -1);
+
+// variabile dello score
+int currentScore = 1;
+
 bool endThread = false;
 
 int main(void) {
@@ -56,11 +65,6 @@ int main(void) {
     // inizializziamo il generatore di numeri casuali
     srand(time(NULL));
 
-    // creiamo il rettangolo con le coordinate di partenza e la direzione : pivot
-    Body pivot = {0, 0, L, L, ""};
-    // aggiungiamo il rettangolo al vettore
-    vectorBody.push_back(pivot);
-
     // randomizziamo la posizione di food e dell'ostacolo  
     food.updatePosForFood();
     Obstacle obstacle = Obstacle();
@@ -73,9 +77,6 @@ int main(void) {
 
     // variabile del ciclo principale
     bool end = false;
-
-    // variabile dello score
-    int currentScore = 1;
 
     // variabile randomica
     std::srand(std::time(0));  // Inizializza il seme con l'ora corrente
@@ -95,13 +96,12 @@ int main(void) {
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
 
-                if (vectorBody[0].getDirection() == "") {
+                if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
-                    vectorBody[0].setDirection("SDLK_DOWN");
+                    pivot.direction.store(3, std::memory_order_relaxed);
                 }
                  
-                Square pivot = Square(vectorBody[0].rect);
-                nextMove = nextMoveIsRect(pivot, food, obstacle, "SDLK_DOWN");
+                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_DOWN");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // incremento lo score
@@ -111,7 +111,13 @@ int main(void) {
                     food.updatePos();
 
                     // snake cresce
-                    growing(vectorBody[vectorBody.size()-1]);
+                    if (vectorBody.size() == 0) {
+                        Body newBody = {pivot.rect.x, pivot.rect.y-L, L, L, "SDLK_DOWN"};
+                        vectorBody.push_back(newBody);
+                    }
+                        
+                    else
+                        growing(vectorBody[vectorBody.size()-1]);
                 }
 
                 // caso in cui rect incontra un ostacolo 
@@ -123,8 +129,8 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 1)
-                        vectorBody[0].rect.y += L;
+                    if (vectorBody.size() == 0)
+                        pivot.rect.y += L;
                     else {
                         onButtonMove("SDLK_DOWN");
                         removeUselessPos();
@@ -135,12 +141,12 @@ int main(void) {
             // mi muovo in alto
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_UP) {
 
-                if (vectorBody[0].getDirection() == "") {
+                if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
-                    vectorBody[0].setDirection("SDLK_UP");
+                    pivot.direction.store(1, std::memory_order_relaxed);
                 }
 
-                nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_UP");
+                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_UP");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // incremento lo score
@@ -150,7 +156,13 @@ int main(void) {
                     food.updatePos();
 
                     // snake cresce
-                    growing(vectorBody[vectorBody.size()-1]);
+                    if (vectorBody.size() == 0) {
+                        Body newBody = {pivot.rect.x, pivot.rect.y+L, L, L, "SDLK_UP"};
+                        vectorBody.push_back(newBody);
+                    }
+                        
+                    else
+                        growing(vectorBody[vectorBody.size()-1]);
                 }
 
                 // caso in cui rect incontra un ostacolo 
@@ -162,8 +174,8 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 1)
-                        vectorBody[0].rect.y -= L;
+                    if (vectorBody.size() == 0)
+                        pivot.rect.y -= L;
                     else {
                         onButtonMove("SDLK_UP");
                         removeUselessPos();
@@ -174,12 +186,12 @@ int main(void) {
             // mi muovo a sinistra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
 
-                if (vectorBody[0].getDirection() == "") {
+                if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
-                    vectorBody[0].setDirection("SDLK_LEFT");
+                    pivot.direction.store(4, std::memory_order_relaxed);
                 }
 
-                nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_LEFT");
+                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_LEFT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // incremento lo score
@@ -189,7 +201,13 @@ int main(void) {
                     food.updatePos();
 
                     // snake cresce
-                    growing(vectorBody[vectorBody.size()-1]);
+                    if (vectorBody.size() == 0) {
+                        Body newBody = {pivot.rect.x+L, pivot.rect.y, L, L, "SDLK_LEFT"};
+                        vectorBody.push_back(newBody);
+                    }
+                        
+                    else
+                        growing(vectorBody[vectorBody.size()-1]);
                 }
 
                 // caso in cui rect incontra un ostacolo 
@@ -201,8 +219,8 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 1)
-                        vectorBody[0].rect.x -= L; 
+                    if (vectorBody.size() == 0)
+                        pivot.rect.x -= L;
                     else {
                         onButtonMove("SDLK_LEFT");
                         removeUselessPos();
@@ -213,12 +231,12 @@ int main(void) {
             // mi muovo a destra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
 
-                if (vectorBody[0].getDirection() == "") {
+                if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
-                    vectorBody[0].setDirection("SDLK_RIGHT");
+                    pivot.direction.store(2, std::memory_order_relaxed);
                 }
 
-                nextMove = nextMoveIsRect(vectorBody[0].rect, food, obstacle, "SDLK_RIGHT");
+                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_RIGHT");
                 // caso in cui rect mangia food
                 if (nextMove == 0) {
                     // incremento lo score
@@ -228,7 +246,13 @@ int main(void) {
                     food.updatePos();
 
                     // snake cresce
-                    growing(vectorBody[vectorBody.size()-1]);
+                    if (vectorBody.size() == 0) {
+                        Body newBody = {pivot.rect.x-L, pivot.rect.y, L, L, "SDLK_RIGHT"};
+                        vectorBody.push_back(newBody);
+                    }
+                        
+                    else
+                        growing(vectorBody[vectorBody.size()-1]);
                 }
 
                 // caso in cui rect incontra un ostacolo 
@@ -240,8 +264,8 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 1)
-                        vectorBody[0].rect.x += L; 
+                    if (vectorBody.size() == 0)
+                        pivot.rect.x += L; 
                     else {
                         onButtonMove("SDLK_RIGHT");
                         removeUselessPos();
@@ -268,24 +292,27 @@ int main(void) {
             SDL_RenderDrawLine(renderer, 0, y, DIM_V, y);
         }
 
+        SDL_SetRenderDrawColor(renderer, 0, 200, 255, 255);
+        SDL_RenderFillRectF(renderer, &(pivot.rect));
+
         // setto il colore di ogni parte di snake
         for (int i = 0; i < vectorBody.size(); i++) {
-            SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255);
             SDL_RenderFillRectF(renderer, &(vectorBody[i].rect));
         }
 
         // setto il colore del food
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
         SDL_RenderFillRectF(renderer, &(food.rect));
 
         // setto il colore dell'ostacolo
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
         SDL_RenderFillRectF(renderer, &(obstacle.rectAltSX.rect));
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
         SDL_RenderFillRectF(renderer, &(obstacle.rectAltDX.rect));
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
         SDL_RenderFillRectF(renderer, &(obstacle.rectDownSX.rect));
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
         SDL_RenderFillRectF(renderer, &(obstacle.rectDownDX.rect));
 
         sdl.drawInfoBar(renderer, font, currentScore);

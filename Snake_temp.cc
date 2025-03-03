@@ -59,6 +59,28 @@ void Square::setY(float y) {
     this->rect.y = y;
 }
 
+// pivot rappresenta il primo elemento del vectoBody, lo definiamo a parte cosi da poter
+// usare i vantaggi della variabile atomic
+Pivot::Pivot(float x, float y, int w, int h, int direction) : Square(x, y, w, h) { // richiamo il costruttore di square
+    this->direction.store(direction, std::memory_order_relaxed);
+}
+
+int Pivot::getDirection() {
+    return this->direction.load(std::memory_order_relaxed);
+}
+
+void Pivot::setDirection(int direction) {
+    this->direction.store(direction, std::memory_order_relaxed);
+}
+
+void Pivot::setX(float x) {
+    this->rect.x = x;
+}
+
+void Pivot::setY(float y) {
+    this->rect.y = y;
+}
+
 
 // body rappresenta un quadrato orientato: cioè uno Square che ha una direzione
 // per cui si tiene traccia di ogni elemento di snake
@@ -83,6 +105,7 @@ void Body::setY(float y) {
     this->rect.y = y;
 }
 
+
 Obstacle::Obstacle() { // richiamo il costruttore di square
 
     // inizializza tutti gli Square partendo da quello in alto a SX che viene generato casualmente
@@ -94,7 +117,7 @@ Obstacle::Obstacle() { // richiamo il costruttore di square
 }
 
 void Obstacle::setCoordinates() {
-    printf("setCoordinates() quadrato alto sinistra: %f,%f\n", this->rectAltSX.getX(), this->rectAltSX.getY());
+    //printf("setCoordinates() quadrato alto sinistra: %f,%f\n", this->rectAltSX.getX(), this->rectAltSX.getY());
 
     // coordinate del quadrato in alto a destra
     this->rectAltDX.setX(this->rectAltSX.getX()+L);

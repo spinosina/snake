@@ -2,6 +2,7 @@
 #define SNAKE_H
 
 #include <SDL.h>
+#include <atomic>
 
 // classe per definire un quadrato singolo che può essere una parte del corpo di snake
 // oppure parte di un ostacolo, o ancora il cibo
@@ -32,6 +33,18 @@ public:
     void setX(float x);
     void setY(float y);
 };
+
+class Pivot : public Square {
+    public:
+        // -1 == nessuna direzione
+        // 1 == up, 2 == right, 3 == down, 4 == left
+        std::atomic<int> direction;
+        Pivot(float x, float y, int w, int h, int direction);
+        int getDirection();
+        void setDirection(int direction);
+        void setX(float x);
+        void setY(float y);
+    };
 
 // obstacle rappresenta un insieme di 4 rect a partire da square, le cui coordinate sono
 // posizionate in maniera tale da formare un unico grande quadrato
