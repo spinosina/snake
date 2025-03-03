@@ -29,6 +29,7 @@
 std::vector<Body> vectorBody;
 std::vector<Position> vectorPosChanged;
 Square food = Square(0, 0, L, L);
+Obstacle obstacle = Obstacle();
 
 // creiamo il pivot con le coordinate di partenza e la direzione : pivot
 // -1 == nessuna direzione
@@ -67,7 +68,6 @@ int main(void) {
 
     // randomizziamo la posizione di food e dell'ostacolo  
     food.updatePosForFood();
-    Obstacle obstacle = Obstacle();
     
     //lancio il thread di aggiornamento posizione dell'ostacolo
     std::thread positionThread(moveObstacle, std::ref(obstacle));
@@ -129,8 +129,10 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 0)
+                    if (vectorBody.size() == 0) {
+                        pivot.direction.store(3, std::memory_order_relaxed);
                         pivot.rect.y += L;
+                    }
                     else {
                         onButtonMove("SDLK_DOWN");
                         removeUselessPos();
@@ -170,12 +172,14 @@ int main(void) {
                     end = true;
                     endThread = true;
                     //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                } 
+                }
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 0)
+                    if (vectorBody.size() == 0) {
+                        pivot.direction.store(1, std::memory_order_relaxed);
                         pivot.rect.y -= L;
+                    }
                     else {
                         onButtonMove("SDLK_UP");
                         removeUselessPos();
@@ -219,8 +223,10 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 0)
+                    if (vectorBody.size() == 0) {
+                        pivot.direction.store(4, std::memory_order_relaxed);
                         pivot.rect.x -= L;
+                    }
                     else {
                         onButtonMove("SDLK_LEFT");
                         removeUselessPos();
@@ -264,8 +270,10 @@ int main(void) {
 
                 // caso in cui non ci sono intersezioni
                 else {
-                    if (vectorBody.size() == 0)
+                    if (vectorBody.size() == 0) {
+                        pivot.direction.store(2, std::memory_order_relaxed);
                         pivot.rect.x += L; 
+                    }
                     else {
                         onButtonMove("SDLK_RIGHT");
                         removeUselessPos();

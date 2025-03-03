@@ -8,6 +8,7 @@
 #include "Snake_temp.h"
 #include "Positions_temp.h"
 #include "globals_temp.h"
+#include "growth_temp.h"
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -117,7 +118,30 @@ void moveSnake() {
         if (pivot.direction.load() == -1)
             printf("La direzione è vuota: ho appena iniziato\n");
         else {
-            /*nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_DOWN");
+            std::string currDir = "";
+            float yDirect = pivot.rect.y;
+            float xDirect= pivot.rect.x;
+            switch (pivot.direction.load())
+            {
+            case 1:
+                currDir = "SDLK_UP";
+                yDirect-=L;
+                break;
+            case 2:
+                currDir = "SDLK_RIGHT";
+                xDirect+=L;
+                break;
+            case 3:
+                currDir = "SDLK_DOWN";
+                yDirect+=L;
+                break;
+            case 4:
+                currDir = "SDLK_LEFT";
+                xDirect-=L;
+                break;
+            }
+            printf("La direzione è %s\n", currDir.c_str());
+            int nextMove = nextMoveIsRect(pivot.rect, food, obstacle, currDir);
             // caso in cui rect mangia food
             if (nextMove == 0) {
                 // incremento lo score
@@ -128,7 +152,7 @@ void moveSnake() {
 
                 // snake cresce
                 if (vectorBody.size() == 0) {
-                    Body newBody = {pivot.rect.x, pivot.rect.y-L, L, L, "SDLK_DOWN"};
+                    Body newBody = {pivot.rect.x, pivot.rect.y, L, L, currDir};
                     vectorBody.push_back(newBody);
                 }
                     
@@ -138,41 +162,24 @@ void moveSnake() {
 
             // caso in cui rect incontra un ostacolo 
             else if (nextMove == 1) {
-                end = true;
-                endThread = true;
-                //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
+                return;
             }
 
             // caso in cui non ci sono intersezioni
             else {
-                if (vectorBody.size() == 0)
-                    pivot.rect.y += L;
+                if (vectorBody.size() == 0) {
+                    pivot.direction.store(pivot.direction.load(), std::memory_order_relaxed);
+                    pivot.rect.y = yDirect;
+                    pivot.rect.x = xDirect;
+                }
                 else {
-                    onButtonMove("SDLK_DOWN");
+                    onButtonMove(currDir);
                     removeUselessPos();
                 }
-            } */
-            std::string currDir = "";
-            switch (pivot.direction.load())
-            {
-            case 1:
-                currDir = "SDLK_UP";
-                break;
-            case 2:
-                currDir = "SDLK_RIGHT";
-                break;
-            case 3:
-                currDir = "SDLK_DOWN";
-                break;
-            case 4:
-                currDir = "SDLK_LEFT";
-                break;
             }
-            printf("La direzione è %s\n", currDir.c_str());
-            onButtonMove(currDir);
         }
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     return;
 }

@@ -11,5 +11,6 @@
     extern bool endThread;
     extern Square food;
     extern Pivot pivot;
+    extern Obstacle obstacle;
     extern int currentScore;
 #endif
