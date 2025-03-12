@@ -16,10 +16,6 @@
 #define YELLOW  "\033[33m"
 #define BLUE    "\033[34m"
 
-#define L 20
-#define DIM_H 600 //componente orizzontale della risoluzione
-#define DIM_V 600 //componente verticale della risoluzione
-
 // questa funzione ritorna 0 se il rect incontra un food, 1 se incontra 
 // un obstacle, 2 altrimenti.
 // nel primo caso aumenta la sua dimensione, nel secondo fa terminare il loop
@@ -115,9 +111,9 @@ void checkIfOutOfWindow(int i) {
 void moveSnake() {
     //int nextMove = -1;
     while (!endThread) {
-        if (pivot.direction.load() == -1)
-            printf("La direzione è vuota: ho appena iniziato\n");
-        else {
+        //if (pivot.direction.load() == -1)
+            //printf("La direzione è vuota: ho appena iniziato\n");
+        //else {
             std::string currDir = "";
             float yDirect = pivot.rect.y;
             float xDirect= pivot.rect.x;
@@ -140,7 +136,7 @@ void moveSnake() {
                 xDirect-=L;
                 break;
             }
-            printf("La direzione è %s\n", currDir.c_str());
+            //printf("La direzione è %s\n", currDir.c_str());
             int nextMove = nextMoveIsRect(pivot.rect, food, obstacle, currDir);
             // caso in cui rect mangia food
             if (nextMove == 0) {
@@ -177,7 +173,7 @@ void moveSnake() {
                     removeUselessPos();
                 }
             }
-        }
+        //}
     
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
@@ -315,10 +311,10 @@ void moveObstacle(Obstacle& obstacle) {
 
             obstacle.rectAltSX.updatePos();
 
-            if ( (obstacle.rectAltSX.getX() == food.getX()) && (obstacle.rectAltSX.getY() == food.getY())
-                || (obstacle.rectAltDX.getX() == food.getX()) && (obstacle.rectAltDX.getY() == food.getY())
-                || (obstacle.rectDownSX.getX() == food.getX()) && (obstacle.rectDownSX.getY() == food.getY())
-                || (obstacle.rectDownDX.getX() == food.getX()) && (obstacle.rectDownDX.getY() == food.getY())) {
+            if ( ((obstacle.rectAltSX.getX() == food.getX()) && (obstacle.rectAltSX.getY() == food.getY()))
+                || ((obstacle.rectAltDX.getX() == food.getX()) && (obstacle.rectAltDX.getY() == food.getY()))
+                || ((obstacle.rectDownSX.getX() == food.getX()) && (obstacle.rectDownSX.getY() == food.getY()))
+                || ((obstacle.rectDownDX.getX() == food.getX()) && (obstacle.rectDownDX.getY() == food.getY()))) {
 
                     obstacle.rectAltSX.updatePos();
             }

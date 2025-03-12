@@ -10,7 +10,7 @@
 #define RED     "\033[31m"
 #define GREEN   "\033[32m"
 #define YELLOW  "\033[33m"
-#define L 20
+#define L 32
 
 // funzione che crea un nuovo rect (una nuova parte del corpo di snake) 
 // passandogli l'ultimo blocco aggiunto al corpo per gestire le coordinate e la direzione

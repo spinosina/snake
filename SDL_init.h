@@ -3,12 +3,15 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 
-#define DIM_H 600 //componente orizzontale della risoluzione
-#define DIM_V 650 //componente verticale della risoluzione
+#define DIM_H 608 //componente orizzontale della risoluzione
+#define DIM_V 658 //componente verticale della risoluzione
 
-#define DIM_H_TESTO 600 //componente orizzontale della risoluzione
+#define DIM_H_TESTO 608 //componente orizzontale della risoluzione
 #define DIM_V_TESTO 50 //componente verticale della risoluzione
+
+#define L 32
 
 // la classe SDL nasce per inizializzare le componenti principali:
 // Window, surface e renderer
@@ -20,6 +23,15 @@ public:
             printf("ERROR IN VIDEO INIT: %s\n", SDL_GetError());
             return 1;
         }
+
+        // inizializzazione dell'SDL_image
+        if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+            std::cerr << "Errore nell'inizializzazione di SDL2_image: " << IMG_GetError() << std::endl;
+            return 1;
+        }
+
+        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); // Disabilita il filtro di interpolazione
+
         return -1;
     }
     SDL_Window* initWindow() {
@@ -73,6 +85,20 @@ public:
         // Pulisci memoria
         SDL_FreeSurface(textSurface);
         SDL_DestroyTexture(textTexture);
+    }
+
+    SDL_Texture* loadTexture(const std::string& path, SDL_Renderer* renderer) {
+
+        // carico l'immagine considerandola una surface
+        SDL_Surface* surface = IMG_Load(path.c_str());
+        if (!surface) {
+            printf("Errore nel caricamento dell'immagine: %s ", IMG_GetError());
+            return nullptr;
+        }
+        // crea una texture dalla surface (l'immagine)
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        return texture;
     }
 };
 

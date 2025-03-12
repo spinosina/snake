@@ -3,9 +3,6 @@
 #include "Positions_temp.h"
 #include "globals_temp.h"
 
-#define L 20
-#define DIM_H 600 //componente orizzontale della risoluzione
-#define DIM_V 600 //componente verticale della risoluzione
 
 // questa classe serve a tener traccia delle posizioni di snake
 

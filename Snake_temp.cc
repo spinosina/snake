@@ -1,11 +1,8 @@
 #include <string>
 #include "Snake_temp.h"
 #include "Positions_temp.h"
+#include "globals_temp.h"
 #include <SDL.h>
-
-#define L 20
-#define DIM_H 600 //componente orizzontale della risoluzione
-#define DIM_V 600 //componente verticale della risoluzione
 
 // classe per definire un quadrato singolo che può essere una parte del corpo di snake
 // oppure parte di un ostacolo, o ancora il cibo

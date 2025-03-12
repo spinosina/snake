@@ -21,10 +21,6 @@
 #define YELLOW  "\033[33m"
 #define BLUE    "\033[34m"
 
-#define DIM_H 600 //componente orizzontale della risoluzione
-#define DIM_V 600 //componente verticale della risoluzione
-
-#define L 20
 
 std::vector<Body> vectorBody;
 std::vector<Position> vectorPosChanged;
@@ -59,6 +55,24 @@ int main(void) {
         printf("Errore: il font non è stato caricato! %s\n", TTF_GetError());
         return -1;
     }
+
+    // inizializzo la skin della testa di snake
+    SDL_Texture* pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Down.png", renderer);
+    if (!pivotSkin) {
+        printf("Error in pivotSkin. Exit ...");
+        return -1; 
+    }
+
+    // inizializzo la skin del corpo di snake
+    SDL_Texture* pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Down.png", renderer);
+    if (!pivotSkin) {
+        printf("Error in pivotBody. Exit ...");
+        return -1; 
+    }
+
+    //SDL_SetTextureBlendMode(pivotSkin, SDL_BLENDMODE_BLEND);
+
+
     // creiamo l'evento su cui ci mettiamo in ascolto
     SDL_Event event;
     SDL_WaitEvent(&event);
@@ -93,190 +107,257 @@ int main(void) {
                 endThread = true;
             }
 
+            int getDir = pivot.direction.load(std::memory_order_relaxed);
+            //printf("%s LA DIR ATTUALE DEL PIVOT PRIMA DEL CLICK è %d\n%s", RED, getDir, RESET);
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
+                SDL_DestroyTexture(pivotSkin);
+                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Down.png", renderer);
 
+                // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
                     pivot.direction.store(3, std::memory_order_relaxed);
                 }
-                 
-                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_DOWN");
-                // caso in cui rect mangia food
-                if (nextMove == 0) {
-                    // incremento lo score
-                    currentScore++;
 
-                    // riposiziono food
-                    food.updatePos();
+                // la prima cosa che verifichiamo è se l'utente sta andando nella direzione 
+                // opposta a quella precedente: in quel caso continuerà per la sua strada
+                // in questo caso se vado verso l'alto (1) non posso andare verso giù (3)
+                // !!!QUESTO FUNZIONA SOLO SE LA SIZE DEL BODY è DIVERSA DA 0!!!
+                // SE INVECE ABBIAMO SOLO IL PIVOT NON C'è PROBLEMA
+                if (getDir == 1 && vectorBody.size() != 0) {
+                    printf(" CANNOT MOVE IN OPPOSITE DIRECTION!! \n");
+                    onButtonMove("SDLK_UP");
+                    removeUselessPos();
+                } else {
+                    
+                    // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
+                    // di snake: o mangia il food, o incontra l'ostacolo o prosegue
+                    nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_DOWN");
+                    // caso in cui rect mangia food
+                    if (nextMove == 0) {
+                        // incremento lo score
+                        currentScore++;
 
-                    // snake cresce
-                    if (vectorBody.size() == 0) {
-                        Body newBody = {pivot.rect.x, pivot.rect.y-L, L, L, "SDLK_DOWN"};
-                        vectorBody.push_back(newBody);
+                        // riposiziono food
+                        food.updatePos();
+
+                        // snake cresce
+                        if (vectorBody.size() == 0) {
+                            Body newBody = {pivot.rect.x, pivot.rect.y-L, L, L, "SDLK_DOWN"};
+                            vectorBody.push_back(newBody);
+                        }
+                            
+                        else
+                            growing(vectorBody[vectorBody.size()-1]);
                     }
-                        
-                    else
-                        growing(vectorBody[vectorBody.size()-1]);
-                }
 
-                // caso in cui rect incontra un ostacolo 
-                else if (nextMove == 1) {
-                    end = true;
-                    endThread = true;
-                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                }
-
-                // caso in cui non ci sono intersezioni
-                else {
-                    if (vectorBody.size() == 0) {
-                        pivot.direction.store(3, std::memory_order_relaxed);
-                        pivot.rect.y += L;
+                    // caso in cui rect incontra un ostacolo 
+                    else if (nextMove == 1) {
+                        end = true;
+                        endThread = true;
+                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                     }
+
+                    // caso in cui non ci sono intersezioni
                     else {
-                        onButtonMove("SDLK_DOWN");
-                        removeUselessPos();
-                    }
-                } 
+                        if (vectorBody.size() == 0) {
+                            pivot.direction.store(3, std::memory_order_relaxed);
+                            pivot.rect.y += L;
+                        }
+                        else {
+                            onButtonMove("SDLK_DOWN");
+                            removeUselessPos();
+                        }
+                    } 
+                }
             }
 
             // mi muovo in alto
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_UP) {
+                SDL_DestroyTexture(pivotSkin);
+                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake.png", renderer);
 
+                // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
                     pivot.direction.store(1, std::memory_order_relaxed);
                 }
 
-                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_UP");
-                // caso in cui rect mangia food
-                if (nextMove == 0) {
-                    // incremento lo score
-                    currentScore++;
+                // la prima cosa che verifichiamo è se l'utente sta andando nella direzione 
+                // opposta a quella precedente: in quel caso continuerà per la sua strada
+                // in questo caso se vado verso il basso (3) non posso andare verso su (1)
+                // !!!QUESTO FUNZIONA SOLO SE LA SIZE DEL BODY è DIVERSA DA 0!!!
+                // SE INVECE ABBIAMO SOLO IL PIVOT NON C'è PROBLEMA
+                if (getDir == 3 && vectorBody.size() != 0) {
+                    printf(" CANNOT MOVE IN OPPOSITE DIRECTION!! \n");
+                    onButtonMove("SDLK_DOWN");
+                    removeUselessPos();
+                } else {
+                    // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
+                    // di snake: o mangia il food, o incontra l'ostacolo o prosegue
+                    nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_UP");
+                    // caso in cui rect mangia food
+                    if (nextMove == 0) {
+                        // incremento lo score
+                        currentScore++;
 
-                    // riposiziono food
-                    food.updatePos();
+                        // riposiziono food
+                        food.updatePos();
 
-                    // snake cresce
-                    if (vectorBody.size() == 0) {
-                        Body newBody = {pivot.rect.x, pivot.rect.y+L, L, L, "SDLK_UP"};
-                        vectorBody.push_back(newBody);
+                        // snake cresce
+                        if (vectorBody.size() == 0) {
+                            Body newBody = {pivot.rect.x, pivot.rect.y+L, L, L, "SDLK_UP"};
+                            vectorBody.push_back(newBody);
+                        }
+                            
+                        else
+                            growing(vectorBody[vectorBody.size()-1]);
                     }
-                        
-                    else
-                        growing(vectorBody[vectorBody.size()-1]);
-                }
 
-                // caso in cui rect incontra un ostacolo 
-                else if (nextMove == 1) {
-                    end = true;
-                    endThread = true;
-                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                }
-
-                // caso in cui non ci sono intersezioni
-                else {
-                    if (vectorBody.size() == 0) {
-                        pivot.direction.store(1, std::memory_order_relaxed);
-                        pivot.rect.y -= L;
+                    // caso in cui rect incontra un ostacolo 
+                    else if (nextMove == 1) {
+                        end = true;
+                        endThread = true;
+                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                     }
+
+                    // caso in cui non ci sono intersezioni
                     else {
-                        onButtonMove("SDLK_UP");
-                        removeUselessPos();
+                        if (vectorBody.size() == 0) {
+                            pivot.direction.store(1, std::memory_order_relaxed);
+                            pivot.rect.y -= L;
+                        }
+                        else {
+                            onButtonMove("SDLK_UP");
+                            removeUselessPos();
+                        }
                     }
                 }
             }
 
             // mi muovo a sinistra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
-
+                SDL_DestroyTexture(pivotSkin);
+                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Left.png", renderer);
+                // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
                     pivot.direction.store(4, std::memory_order_relaxed);
                 }
 
-                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_LEFT");
-                // caso in cui rect mangia food
-                if (nextMove == 0) {
-                    // incremento lo score
-                    currentScore++;
+                // la prima cosa che verifichiamo è se l'utente sta andando nella direzione 
+                // opposta a quella precedente: in quel caso continuerà per la sua strada
+                // in questo caso se sono a destra (2) non posso andare a sinistra (4)
+                // !!!QUESTO FUNZIONA SOLO SE LA SIZE DEL BODY è DIVERSA DA 0!!!
+                // SE INVECE ABBIAMO SOLO IL PIVOT NON C'è PROBLEMA
+                if (getDir == 2 && vectorBody.size() != 0) {
+                    printf(" CANNOT MOVE IN OPPOSITE DIRECTION!! \n");
+                    onButtonMove("SDLK_RIGHT");
+                    removeUselessPos();
+                } else {
+                    // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
+                    // di snake: o mangia il food, o incontra l'ostacolo o prosegue
+                    nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_LEFT");
+                    // caso in cui rect mangia food
+                    if (nextMove == 0) {
+                        // incremento lo score
+                        currentScore++;
 
-                    // riposiziono food
-                    food.updatePos();
+                        // riposiziono food
+                        food.updatePos();
 
-                    // snake cresce
-                    if (vectorBody.size() == 0) {
-                        Body newBody = {pivot.rect.x+L, pivot.rect.y, L, L, "SDLK_LEFT"};
-                        vectorBody.push_back(newBody);
+                        // snake cresce
+                        if (vectorBody.size() == 0) {
+                            Body newBody = {pivot.rect.x+L, pivot.rect.y, L, L, "SDLK_LEFT"};
+                            vectorBody.push_back(newBody);
+                        }
+                            
+                        else
+                            growing(vectorBody[vectorBody.size()-1]);
                     }
-                        
-                    else
-                        growing(vectorBody[vectorBody.size()-1]);
-                }
 
-                // caso in cui rect incontra un ostacolo 
-                else if (nextMove == 1) {
-                    end = true;
-                    endThread = true;
-                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                }
-
-                // caso in cui non ci sono intersezioni
-                else {
-                    if (vectorBody.size() == 0) {
-                        pivot.direction.store(4, std::memory_order_relaxed);
-                        pivot.rect.x -= L;
+                    // caso in cui rect incontra un ostacolo 
+                    else if (nextMove == 1) {
+                        end = true;
+                        endThread = true;
+                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                     }
+
+                    // caso in cui non ci sono intersezioni
                     else {
-                        onButtonMove("SDLK_LEFT");
-                        removeUselessPos();
+                        if (vectorBody.size() == 0) {
+                            pivot.direction.store(4, std::memory_order_relaxed);
+                            pivot.rect.x -= L;
+                        }
+                        else {
+                            onButtonMove("SDLK_LEFT");
+                            removeUselessPos();
+                        }
                     }
                 }
             }
 
             // mi muovo a destra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
+                SDL_DestroyTexture(pivotSkin);
+                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Right.png", renderer);
 
+                // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
                     pivot.direction.store(2, std::memory_order_relaxed);
                 }
 
-                nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_RIGHT");
-                // caso in cui rect mangia food
-                if (nextMove == 0) {
-                    // incremento lo score
-                    currentScore++;
+                // la prima cosa che verifichiamo è se l'utente sta andando nella direzione 
+                // opposta a quella precedente: in quel caso continuerà per la sua strada
+                // in questo caso se sono a sinistra (4) non posso andare a destra (2)
+                // !!!QUESTO FUNZIONA SOLO SE LA SIZE DEL BODY è DIVERSA DA 0!!!
+                // SE INVECE ABBIAMO SOLO IL PIVOT NON C'è PROBLEMA
+                if (getDir == 4 && vectorBody.size() != 0) {
+                    printf(" CANNOT MOVE IN OPPOSITE DIRECTION!! \n");
+                    onButtonMove("SDLK_LEFT");
+                    removeUselessPos();
+                } else {
 
-                    // riposiziono food
-                    food.updatePos();
+                    // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
+                    // di snake: o mangia il food, o incontra l'ostacolo o prosegue
+                    nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_RIGHT");
+                    // caso in cui rect mangia food
+                    if (nextMove == 0) {
+                        // incremento lo score
+                        currentScore++;
 
-                    // snake cresce
-                    if (vectorBody.size() == 0) {
-                        Body newBody = {pivot.rect.x-L, pivot.rect.y, L, L, "SDLK_RIGHT"};
-                        vectorBody.push_back(newBody);
+                        // riposiziono food
+                        food.updatePos();
+
+                        // snake cresce
+                        if (vectorBody.size() == 0) {
+                            Body newBody = {pivot.rect.x-L, pivot.rect.y, L, L, "SDLK_RIGHT"};
+                            vectorBody.push_back(newBody);
+                        }
+                            
+                        else
+                            growing(vectorBody[vectorBody.size()-1]);
                     }
-                        
-                    else
-                        growing(vectorBody[vectorBody.size()-1]);
-                }
 
-                // caso in cui rect incontra un ostacolo 
-                else if (nextMove == 1) {
-                    end = true;
-                    endThread = true;
-                    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                }
-
-                // caso in cui non ci sono intersezioni
-                else {
-                    if (vectorBody.size() == 0) {
-                        pivot.direction.store(2, std::memory_order_relaxed);
-                        pivot.rect.x += L; 
+                    // caso in cui rect incontra un ostacolo 
+                    else if (nextMove == 1) {
+                        end = true;
+                        endThread = true;
+                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
                     }
+
+                    // caso in cui non ci sono intersezioni
                     else {
-                        onButtonMove("SDLK_RIGHT");
-                        removeUselessPos();
+                        if (vectorBody.size() == 0) {
+                            pivot.direction.store(2, std::memory_order_relaxed);
+                            pivot.rect.x += L; 
+                        }
+                        else {
+                            onButtonMove("SDLK_RIGHT");
+                            removeUselessPos();
+                        }
                     }
                 }
             }
@@ -300,13 +381,16 @@ int main(void) {
             SDL_RenderDrawLine(renderer, 0, y, DIM_V, y);
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 200, 255, 255);
-        SDL_RenderFillRectF(renderer, &(pivot.rect));
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderClear(renderer);
+        SDL_SetTextureBlendMode(pivotSkin, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyF(renderer, pivotSkin, nullptr, &(pivot.rect));
 
         // setto il colore di ogni parte di snake
         for (int i = 0; i < vectorBody.size(); i++) {
-            SDL_SetRenderDrawColor(renderer, 173, 255, 47, 255);
-            SDL_RenderFillRectF(renderer, &(vectorBody[i].rect));
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_SetTextureBlendMode(pivotBody, SDL_BLENDMODE_BLEND);
+            SDL_RenderCopyF(renderer, pivotBody, nullptr,&(vectorBody[i].rect));
         }
 
         // setto il colore del food
@@ -328,8 +412,9 @@ int main(void) {
         SDL_RenderPresent(renderer);
     }
     printf("FINAL SCORE = %d\n", currentScore);
-    const char* finalScore = "FINAL SCORE: " + currentScore;
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", finalScore, window);
+    //std::string currentScoreStr = std::to_string(currentScore);
+    //const char* finalScore = "FINAL SCORE: " + currentScoreStr;
+    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", finalScore, window);
 
     // Attendi la terminazione del thread
     positionThread.join();
