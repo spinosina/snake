@@ -45,9 +45,21 @@ int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string dire
                 && (rect.getY() == obstacle.rectAltSX.getY() || rect.getY() == obstacle.rectAltDX.getY() || 
                 rect.getY() == obstacle.rectDownSX.getY() || rect.getY() == obstacle.rectDownDX.getY())) 
         return 1;
+
+    else if (nextMoveIsSnake(rect) == 3) 
+        return 3;
     
     else
         return 2;
+}
+
+int nextMoveIsSnake(Square rect) {
+    float xPivot = rect.getX();
+    float yPivot = rect.getY();
+    for (int i = 0; i<vectorBody.size(); i++) {
+        if ((vectorBody[i].rect.x == xPivot) && (vectorBody[i].rect.y == yPivot))
+            return 3;
+    }
 }
 
 std::string findInVectPos(Square rect) {
@@ -156,8 +168,8 @@ void moveSnake() {
                     growing(vectorBody[vectorBody.size()-1]);
             }
 
-            // caso in cui rect incontra un ostacolo 
-            else if (nextMove == 1) {
+            // caso in cui rect incontra un ostacolo o se stesso
+            else if (nextMove == 1 || nextMove == 3) {
                 return;
             }
 

@@ -5,6 +5,7 @@
 #include "Snake_temp.h"
 
 int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string direction);
+int nextMoveIsSnake(Square rect);
 std::string findInVectPos(Square rect);
 void checkIfOutOfWindow(int i);
 void moveSnake();
