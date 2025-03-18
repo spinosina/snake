@@ -111,8 +111,6 @@ int main(void) {
             //printf("%s LA DIR ATTUALE DEL PIVOT PRIMA DEL CLICK è %d\n%s", RED, getDir, RESET);
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
-                SDL_DestroyTexture(pivotSkin);
-                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Down.png", renderer);
                 
                 // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
@@ -130,6 +128,8 @@ int main(void) {
                     onButtonMove("SDLK_UP");
                     removeUselessPos();
                 } else {
+                    SDL_DestroyTexture(pivotSkin);
+                    pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Down.png", renderer);
                     
                     // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
                     // di snake: o mangia il food, o incontra l'ostacolo o prosegue
@@ -164,6 +164,7 @@ int main(void) {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(3, std::memory_order_relaxed);
                             pivot.rect.y += L;
+                            checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_DOWN");
@@ -175,8 +176,6 @@ int main(void) {
 
             // mi muovo in alto
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_UP) {
-                SDL_DestroyTexture(pivotSkin);
-                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake.png", renderer);
 
                 // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
@@ -194,6 +193,9 @@ int main(void) {
                     onButtonMove("SDLK_DOWN");
                     removeUselessPos();
                 } else {
+                    SDL_DestroyTexture(pivotSkin);
+                    pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake.png", renderer);
+
                     // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
                     // di snake: o mangia il food, o incontra l'ostacolo o prosegue
                     nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_UP");
@@ -227,6 +229,7 @@ int main(void) {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(1, std::memory_order_relaxed);
                             pivot.rect.y -= L;
+                            checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_UP");
@@ -238,8 +241,7 @@ int main(void) {
 
             // mi muovo a sinistra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_LEFT) {
-                SDL_DestroyTexture(pivotSkin);
-                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Left.png", renderer);
+                
                 // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
                     printf("caso direction == ""\n");
@@ -256,6 +258,9 @@ int main(void) {
                     onButtonMove("SDLK_RIGHT");
                     removeUselessPos();
                 } else {
+                    SDL_DestroyTexture(pivotSkin);
+                    pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Left.png", renderer);
+
                     // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
                     // di snake: o mangia il food, o incontra l'ostacolo o prosegue
                     nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_LEFT");
@@ -289,6 +294,7 @@ int main(void) {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(4, std::memory_order_relaxed);
                             pivot.rect.x -= L;
+                            checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_LEFT");
@@ -300,8 +306,6 @@ int main(void) {
 
             // mi muovo a destra
             else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RIGHT) {
-                SDL_DestroyTexture(pivotSkin);
-                pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Right.png", renderer);
 
                 // caso in cui snake si sta muovendo per la prima volta
                 if (pivot.direction.load(std::memory_order_relaxed) == -1) {
@@ -319,6 +323,8 @@ int main(void) {
                     onButtonMove("SDLK_LEFT");
                     removeUselessPos();
                 } else {
+                    SDL_DestroyTexture(pivotSkin);
+                    pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Right.png", renderer);
 
                     // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
                     // di snake: o mangia il food, o incontra l'ostacolo o prosegue
@@ -353,6 +359,7 @@ int main(void) {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(2, std::memory_order_relaxed);
                             pivot.rect.x += L; 
+                            checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_RIGHT");

@@ -60,6 +60,7 @@ int nextMoveIsSnake(Square rect) {
         if ((vectorBody[i].rect.x == xPivot) && (vectorBody[i].rect.y == yPivot))
             return 3;
     }
+    return -1;
 }
 
 std::string findInVectPos(Square rect) {
@@ -76,47 +77,43 @@ std::string findInVectPos(Square rect) {
 // window, quindi quando le coordinate sono <0 o >DIM_H (che è la componente di altezza massima)
 // o >DIM_V (che è la componente di ampiezza massima)
 void checkIfOutOfWindow(int i) {
+    float x; float y;
     if (i != -1) {
-        if (vectorBody[i].getX() < 0) {
-            vectorBody[i].rect.x = DIM_H;
-            printf("la x era < 0, ora è: %f", vectorBody[i].getX());
-        } 
-        
-        else if (vectorBody[i].getX() == DIM_H) {
-            vectorBody[i].rect.x = 0;
-            printf("la x era > MAX, ora è: %f", vectorBody[i].getX());
-        } 
-        
-        else if (vectorBody[i].getY() < 0) {
-            vectorBody[i].rect.y = DIM_V;
-            printf("la y era < 0, ora è: %f", vectorBody[i].getY());
-        }
-        
-        else if (vectorBody[i].getY() == DIM_H) {
-            vectorBody[i].rect.y = 0;
-            printf("la y era > MAX, ora è: %f", vectorBody[i].getY());
-        }
+        x = vectorBody[i].getX();
+        y = vectorBody[i].getY();
     } else {
-        if (pivot.getX() < 0) {
-            pivot.rect.x = DIM_H;
-            printf("la x era < 0, ora è: %f", pivot.getX());
-        } 
-        
-        else if (pivot.getX() == DIM_H) {
-            pivot.rect.x = 0;
-            printf("la x era > MAX, ora è: %f", pivot.getX());
-        } 
-        
-        else if (pivot.getY() < 0) {
-            pivot.rect.y = DIM_V;
-            printf("la y era < 0, ora è: %f", pivot.getY());
-        }
-        
-        else if (pivot.getY() == DIM_H) {
-            pivot.rect.y = 0;
-            printf("la y era > MAX, ora è: %f", pivot.getY());
-        }
+        x = pivot.getX();
+        y = pivot.getY();
     }
+     
+    if (x < 0) {
+        x = DIM_H;
+        printf("la x era < 0, ora è: %f\n", x);
+    } 
+    
+    else if (x == DIM_H) {
+        x = 0;
+        printf("la x era > MAX, ora è: %f\n", x);
+    } 
+    
+    else if (y < 0) {
+        y = DIM_V;
+        printf("la y era < 0, ora è: %f\n", y);
+    }
+    
+    else if (y == DIM_H) {
+        y = 0;
+        printf("la y era > MAX, ora è: %f\n", y);
+    }
+
+    if (i != -1) {
+        vectorBody[i].setX(x);
+        vectorBody[i].setY(y);
+    } else {
+        pivot.setX(x);
+        pivot.setY(y);
+    }
+
     return;
 }
 
@@ -129,6 +126,8 @@ void moveSnake() {
             std::string currDir = "";
             float yDirect = pivot.rect.y;
             float xDirect= pivot.rect.x;
+            float yForNewElem = pivot.rect.y;
+            float xForNewElem= pivot.rect.x;
             switch (pivot.direction.load())
             {
             case 1:
@@ -148,6 +147,10 @@ void moveSnake() {
                 xDirect-=L;
                 break;
             }
+
+            //printf("%sall'inizio il pivot ha queste coordinate: %f, %f\n%s", RED, pivot.rect.x, pivot.rect.y, RESET);
+            //printf("%slo sposto a queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
+
             //printf("La direzione è %s\n", currDir.c_str());
             int nextMove = nextMoveIsRect(pivot.rect, food, obstacle, currDir);
             // caso in cui rect mangia food
@@ -160,8 +163,10 @@ void moveSnake() {
 
                 // snake cresce
                 if (vectorBody.size() == 0) {
-                    Body newBody = {pivot.rect.x, pivot.rect.y, L, L, currDir};
+                    //printf("%scollisione con food, il pivot ha queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
+                    Body newBody = {xForNewElem, yForNewElem, L, L, currDir};
                     vectorBody.push_back(newBody);
+                    //printf("%scollisione con food, l'elemento che ho aggiunto ha queste coordinate: %f, %f\n%s", BLUE, newBody.getX(), newBody.getY(), RESET);
                 }
                     
                 else
@@ -176,9 +181,11 @@ void moveSnake() {
             // caso in cui non ci sono intersezioni
             else {
                 if (vectorBody.size() == 0) {
+                    printf("%snon ci sono intersezioni, il pivot ha queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
                     pivot.direction.store(pivot.direction.load(), std::memory_order_relaxed);
-                    pivot.rect.y = yDirect;
-                    pivot.rect.x = xDirect;
+                    pivot.setX(xDirect);
+                    pivot.setY(yDirect);
+                    checkIfOutOfWindow(-1);
                 }
                 else {
                     onButtonMove(currDir);
@@ -187,7 +194,7 @@ void moveSnake() {
             }
         //}
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     return;
 }
@@ -210,8 +217,6 @@ void onButtonMove(std::string direction) {
         pivotDirectionBeforeChange = "SDLK_LEFT";
         break;
     }
-        
-
     // aggiungo il punto di svolta al vettore vectorPosChanged
     if (pivotDirectionBeforeChange != direction) {
         Position directionChanged = Position(pivot.rect.x, pivot.rect.y, direction);
@@ -254,7 +259,7 @@ void onButtonMove(std::string direction) {
         std::string found = findInVectPos(pivot.rect);
 
         if (found != "NotFound"){
-            printf("New direction: %s\n", found.c_str());
+            //printf("New direction: %s\n", found.c_str());
 
             int directionInt = -1;
             if (strcmp(found.c_str(), "SDLK_UP")==0)
@@ -285,7 +290,7 @@ void onButtonMove(std::string direction) {
     }
 
     checkIfOutOfWindow(-1);
-    printf("il pivot ha queste coordinate %f,%f\n", pivot.rect.x, pivot.rect.y);
+    //printf("il pivot ha queste coordinate %f,%f\n", pivot.rect.x, pivot.rect.y);
 
     return;
 }
@@ -294,7 +299,7 @@ void onButtonMove(std::string direction) {
 // delle posizioni di svolta ogni qual volta che tutto il corpo di snake le ha attraversate
 void removeUselessPos() {
     bool found = false;
-    printf("%sla size di vectorPosChanged: %zu %s\n", YELLOW, vectorPosChanged.size(), RESET);
+    //printf("%sla size di vectorPosChanged: %zu %s\n", YELLOW, vectorPosChanged.size(), RESET);
 
     for (int i = 0; i < vectorPosChanged.size(); i++) {
         found = false;
@@ -306,7 +311,7 @@ void removeUselessPos() {
         if (found == false) 
             vectorPosChanged.erase(vectorPosChanged.begin());
     }
-    printf("%sla size di vectorPosChanged: %zu %s\n", YELLOW, vectorPosChanged.size(), RESET);
+    //printf("%sla size di vectorPosChanged: %zu %s\n", YELLOW, vectorPosChanged.size(), RESET);
     return;
 }
 
