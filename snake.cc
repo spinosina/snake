@@ -395,15 +395,62 @@ int main(void) {
 
         // setto il colore di ogni parte di snake
         for (int i = 0; i < vectorBody.size(); i++) {
-            if (vectorBody[i].getDirection() == "SDLK_UP")
-                pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body.png", renderer);
-            else if (vectorBody[i].getDirection() == "SDLK_RIGHT")
-                pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Right.png", renderer);
-            else if (vectorBody[i].getDirection() == "SDLK_LEFT")
-                pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Left.png", renderer);
-            else if (vectorBody[i].getDirection() == "SDLK_DOWN")
-                pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Down.png", renderer);
-            
+
+            // chiamo la findInVectPos che mi ritorna la direzione verso cui sto girando se e solo se
+            // quel pezzo di body è dentro il vettore delle posizioni cambiate
+            std::string directionChanged = findInVectPos(vectorBody[i].rect);
+                if (directionChanged == "NotFound") {
+                    if (vectorBody[i].getDirection() == "SDLK_UP")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body.png", renderer);
+                else if (vectorBody[i].getDirection() == "SDLK_RIGHT")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Right.png", renderer);
+                else if (vectorBody[i].getDirection() == "SDLK_LEFT")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Left.png", renderer);
+                else if (vectorBody[i].getDirection() == "SDLK_DOWN")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Body_Down.png", renderer);
+                
+            } else {
+                // se non è l'ultimo elemento e se esiste un elemento precedente
+                if ((i+1 != vectorBody.size()) && (i != vectorBody.size())) {
+
+                    // GESTIONE DELLE CURVE --- senso antiorario
+                    // da up a left
+                    if (directionChanged == "SDLK_LEFT" && vectorBody[i+1].direction == "SDLK_UP") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Up_to_Left.png", renderer);
+                    } 
+                    // da left a down
+                    else if (directionChanged == "SDLK_DOWN" && vectorBody[i+1].direction == "SDLK_LEFT") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Left_to_Down.png", renderer);
+                    }
+                    // da down a right
+                    else if (directionChanged == "SDLK_RIGHT" && vectorBody[i+1].direction == "SDLK_DOWN") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Down_to_Right.png", renderer);
+                    }
+                    // da right a up
+                    else if (directionChanged == "SDLK_UP" && vectorBody[i+1].direction == "SDLK_RIGHT") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Right_to_Up.png", renderer);
+                    }
+
+                    // GESTIONE DELLE CURVE --- senso orario
+                    // da up a right
+                    if (directionChanged == "SDLK_RIGHT" && vectorBody[i+1].direction == "SDLK_UP") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Up_to_Right.png", renderer);
+                    } 
+                    // da right a down
+                    else if (directionChanged == "SDLK_DOWN" && vectorBody[i+1].direction == "SDLK_RIGHT") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Right_to_Down.png", renderer);
+                    }
+                    // da down a left
+                    else if (directionChanged == "SDLK_LEFT" && vectorBody[i+1].direction == "SDLK_DOWN") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Down_to_Left.png", renderer);
+                    }
+                    // da left a up
+                    else if (directionChanged == "SDLK_UP" && vectorBody[i+1].direction == "SDLK_LEFT") {
+                        pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Try_1_Snake_Curva_Left_to_Up.png", renderer);
+                    }
+                }
+            }
+
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_SetTextureBlendMode(pivotBody, SDL_BLENDMODE_BLEND);
             SDL_RenderCopyF(renderer, pivotBody, nullptr,&(vectorBody[i].rect));
