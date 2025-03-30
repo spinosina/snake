@@ -324,11 +324,12 @@ void moveObstacle(Obstacle& obstacle) {
         // facciamo un check per controllare che questa nuova posizione non sovrapponga il food
         // nè il body
 
-        while (collision) {
+        while (collision) {  // deve essere true per continuare il ciclo
 
             obstacle.rectAltSX.updatePos();
 
-            if ( ((obstacle.rectAltSX.getX() == food.getX()) && (obstacle.rectAltSX.getY() == food.getY()))
+            // controllo se viene generato in collisione col food
+            if (((obstacle.rectAltSX.getX() == food.getX()) && (obstacle.rectAltSX.getY() == food.getY()))
                 || ((obstacle.rectAltDX.getX() == food.getX()) && (obstacle.rectAltDX.getY() == food.getY()))
                 || ((obstacle.rectDownSX.getX() == food.getX()) && (obstacle.rectDownSX.getY() == food.getY()))
                 || ((obstacle.rectDownDX.getX() == food.getX()) && (obstacle.rectDownDX.getY() == food.getY()))) {
@@ -337,6 +338,22 @@ void moveObstacle(Obstacle& obstacle) {
             }
             else
                 collision = false;
+
+            if (collision == false) {
+                // controllo se viene generato in collisione col serpente
+                for (int i = 0; i < vectorBody.size(); i++) {
+                    if (((obstacle.rectAltSX.getX() == vectorBody[i].getX()) && (obstacle.rectAltSX.getY() == vectorBody[i].getY()))
+                    || ((obstacle.rectAltDX.getX() == vectorBody[i].getX()) && (obstacle.rectAltDX.getY() == vectorBody[i].getY()))
+                    || ((obstacle.rectDownSX.getX() == vectorBody[i].getX()) && (obstacle.rectDownSX.getY() == vectorBody[i].getY()))
+                    || ((obstacle.rectDownDX.getX() == vectorBody[i].getX()) && (obstacle.rectDownDX.getY() == vectorBody[i].getY()))) {
+
+                        obstacle.rectAltSX.updatePos();
+                    }
+                    else
+                        collision = false;
+                }
+            } else
+                collision = true;
         }  
 
         obstacle.setCoordinates();
