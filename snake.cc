@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <atomic>
 
 #include "movement_temp.h"
 #include "growth_temp.h"
@@ -35,7 +36,7 @@ Pivot pivot(0.0, 0.0, L, L, -1);
 // variabile dello score
 int currentScore = 1;
 
-bool endThread = false;
+std::atomic<bool> endThread(false);
 
 int main(void) {
     // il servizio di cui necessitiamo è uno schermo a video
@@ -70,8 +71,34 @@ int main(void) {
         return -1; 
     }
 
-    //SDL_SetTextureBlendMode(pivotSkin, SDL_BLENDMODE_BLEND);
+    // inizializzo la skin del food
+    SDL_Texture* foodSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_2_Oliva.png", renderer);
+    if (!foodSkin) {
+        printf("Error in foodSkin. Exit ...");
+        return -1;
+    }
 
+    // inizializzo la skin dell'ostacolo
+    SDL_Texture* obstSkinAltSx = sdl.loadTexture( "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltSX.png", renderer);
+    if (!obstSkinAltSx) {
+        printf("Error in obstSkinAltSx. Exit ...");
+        return -1;
+    }
+    SDL_Texture* obstSkinAltDx = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltDX.png", renderer);
+    if (!obstSkinAltDx) {
+        printf("Error in obstSkinAltDx. Exit ...");
+        return -1;
+    }
+    SDL_Texture* obstSkinDwnSx = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_DwnSX.png", renderer);
+    if (!obstSkinDwnSx) {
+        printf("Error in obstSkinDwnSx. Exit ...");
+        return -1;
+    }
+    SDL_Texture* obstSkinDwnDx = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_DwnDX.png", renderer);
+    if (!obstSkinDwnDx) {
+        printf("Error in obstSkinDwnDx. Exit ...");
+        return -1;
+    }
 
     // creiamo l'evento su cui ci mettiamo in ascolto
     SDL_Event event;
@@ -79,36 +106,30 @@ int main(void) {
 
     // inizializziamo il generatore di numeri casuali
     srand(time(NULL));
+    // variabile randomica
+    std::srand(std::time(0));  // Inizializza il seme con l'ora corrente
 
     // randomizziamo la posizione di food e dell'ostacolo  
     food.updatePosForFood();
     
     //lancio il thread di aggiornamento posizione dell'ostacolo
     std::thread positionThread(moveObstacle, std::ref(obstacle));
-
     //lancio il thread di spostamento dello snake
     std::thread movingSnakeThread(moveSnake);
-
-    // variabile del ciclo principale
-    bool end = false;
-
-    // variabile randomica
-    std::srand(std::time(0));  // Inizializza il seme con l'ora corrente
 
     // variabile del movimento
     int nextMove = -1;
 
     // ciclo principale di gioco
-    while (!end) {
+    while (!endThread) {
         while(SDL_PollEvent(&event)) {
             // usciamo al click sulla x
-            if (event.type == SDL_QUIT) {
-                end = true;
+            if (event.type == SDL_QUIT)
                 endThread = true;
-            }
 
+            // ricaviamo la direzione del pivot
             int getDir = pivot.direction.load(std::memory_order_relaxed);
-            //printf("%s LA DIR ATTUALE DEL PIVOT PRIMA DEL CLICK è %d\n%s", RED, getDir, RESET);
+
             // mi muovo in basso
             if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
                 
@@ -131,8 +152,8 @@ int main(void) {
                     SDL_DestroyTexture(pivotSkin);
                     pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Snake_Down.png", renderer);
                     
-                    // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
-                    // di snake: o mangia il food, o incontra l'ostacolo o prosegue
+                    // tramite la funzione nextMoveIsRect ricavo l'info su cosa succederà al prossimo movimento 
+                    // di snake: o mangia il food, o incontra l'ostacolo (o se stesso) o prosegue
                     nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_DOWN");
                     // caso in cui rect mangia food
                     if (nextMove == 0) {
@@ -143,28 +164,26 @@ int main(void) {
                         food.updatePos();
 
                         // snake cresce
+                        // se non esiste ancora il body lo creo
                         if (vectorBody.size() == 0) {
                             Body newBody = {pivot.rect.x, pivot.rect.y-L, L, L, "SDLK_DOWN"};
                             vectorBody.push_back(newBody);
                         }
-                            
+                        // sennò lo faccio crescere  
                         else
                             growing(vectorBody[vectorBody.size()-1]);
                     }
 
                     // caso in cui rect incontra un ostacolo o se stesso
-                    else if (nextMove == 1 || nextMove == 3) {
-                        end = true;
+                    else if (nextMove == 1 || nextMove == 3) 
                         endThread = true;
-                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                    }
 
                     // caso in cui non ci sono intersezioni
                     else {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(3, std::memory_order_relaxed);
                             pivot.rect.y += L;
-                            checkIfOutOfWindow(-1);
+                            //checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_DOWN");
@@ -196,8 +215,8 @@ int main(void) {
                     SDL_DestroyTexture(pivotSkin);
                     pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Snake.png", renderer);
 
-                    // tramite la funzione nextMoveIsRect ricavo cosa succederà al prossimo movimento 
-                    // di snake: o mangia il food, o incontra l'ostacolo o prosegue
+                    // tramite la funzione nextMoveIsRect ricavo l'info su cosa succederà al prossimo movimento 
+                    // di snake: o mangia il food, o incontra l'ostacolo (o se stesso) o prosegue
                     nextMove = nextMoveIsRect(pivot.rect, food, obstacle, "SDLK_UP");
                     // caso in cui rect mangia food
                     if (nextMove == 0) {
@@ -218,18 +237,16 @@ int main(void) {
                     }
 
                     // caso in cui rect incontra un ostacolo o se stesso
-                    else if (nextMove == 1 || nextMove == 3) {
-                        end = true;
+                    else if (nextMove == 1 || nextMove == 3) 
                         endThread = true;
-                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                    }
 
                     // caso in cui non ci sono intersezioni
                     else {
+                        // se non esiste ancora il body lo creo
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(1, std::memory_order_relaxed);
                             pivot.rect.y -= L;
-                            checkIfOutOfWindow(-1);
+                            //checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_UP");
@@ -277,24 +294,21 @@ int main(void) {
                             Body newBody = {pivot.rect.x+L, pivot.rect.y, L, L, "SDLK_LEFT"};
                             vectorBody.push_back(newBody);
                         }
-                            
+                        // sennò lo faccio crescere  
                         else
                             growing(vectorBody[vectorBody.size()-1]);
                     }
 
                     // caso in cui rect incontra un ostacolo o se stesso
-                    else if (nextMove == 1 || nextMove == 3) {
-                        end = true;
+                    else if (nextMove == 1 || nextMove == 3)
                         endThread = true;
-                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                    }
 
                     // caso in cui non ci sono intersezioni
                     else {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(4, std::memory_order_relaxed);
                             pivot.rect.x -= L;
-                            checkIfOutOfWindow(-1);
+                            //checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_LEFT");
@@ -348,18 +362,15 @@ int main(void) {
                     }
 
                     // caso in cui rect incontra un ostacolo o se stesso
-                    else if (nextMove == 1 || nextMove == 3) {
-                        end = true;
+                    else if (nextMove == 1 || nextMove == 3)
                         endThread = true;
-                        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "GAME OVER", "final score: ", window);
-                    }
 
                     // caso in cui non ci sono intersezioni
                     else {
                         if (vectorBody.size() == 0) {
                             pivot.direction.store(2, std::memory_order_relaxed);
                             pivot.rect.x += L; 
-                            checkIfOutOfWindow(-1);
+                            //checkIfOutOfWindow(-1);
                         }
                         else {
                             onButtonMove("SDLK_RIGHT");
@@ -458,17 +469,27 @@ int main(void) {
 
         // setto il colore del food
         SDL_SetRenderDrawColor(renderer, 0, 100, 0, 255);
-        SDL_RenderFillRectF(renderer, &(food.rect));
+        //SDL_RenderFillRectF(renderer, &(food.rect));
+        SDL_SetTextureBlendMode(foodSkin, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyF(renderer, foodSkin, nullptr,&(food.rect));
+        
 
         // setto il colore dell'ostacolo
-        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
-        SDL_RenderFillRectF(renderer, &(obstacle.rectAltSX.rect));
-        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
-        SDL_RenderFillRectF(renderer, &(obstacle.rectAltDX.rect));
-        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
-        SDL_RenderFillRectF(renderer, &(obstacle.rectDownSX.rect));
-        SDL_SetRenderDrawColor(renderer, 72, 61, 139, 255);
-        SDL_RenderFillRectF(renderer, &(obstacle.rectDownDX.rect));
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetTextureBlendMode(obstSkinAltSx, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyF(renderer, obstSkinAltSx, nullptr,&(obstacle.rectAltSX.rect));
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetTextureBlendMode(obstSkinAltDx, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyF(renderer, obstSkinAltDx, nullptr,&(obstacle.rectAltDX.rect));
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetTextureBlendMode(obstSkinDwnSx, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyF(renderer, obstSkinDwnSx, nullptr,&(obstacle.rectDownSX.rect));
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetTextureBlendMode(obstSkinDwnDx, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyF(renderer, obstSkinDwnDx, nullptr,&(obstacle.rectDownDX.rect));
 
         sdl.drawInfoBar(renderer, font, currentScore);
         // applico al renderer
@@ -482,7 +503,7 @@ int main(void) {
     // Attendi la terminazione del thread
     positionThread.join();
     movingSnakeThread.join();
-    
+
     sdl.destroyAll(window, renderer);
     return 0;
 }

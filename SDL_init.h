@@ -5,13 +5,8 @@
 #include <SDL_ttf.h>
 #include <SDL_image.h>
 
-#define DIM_H 608 //componente orizzontale della risoluzione
-#define DIM_V 658 //componente verticale della risoluzione
-
-#define DIM_H_TESTO 608 //componente orizzontale della risoluzione
-#define DIM_V_TESTO 50 //componente verticale della risoluzione
-
-#define L 32
+#define DIM_H_TESTO 640 //componente orizzontale della risoluzione
+#define DIM_V_TESTO 64 //componente verticale della risoluzione
 
 // la classe SDL nasce per inizializzare le componenti principali:
 // Window, surface e renderer

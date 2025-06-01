@@ -20,7 +20,7 @@ Square::Square(float x, float y, int w, int h) {
 
 void Square::updatePosForFood() {
     Position posForFood = Position(0, 0, "");
-    posForFood = posForFood.getNewCoordinates();
+    posForFood = posForFood.getNewCoordinatesForFood();
     this->setX(posForFood.x);
     this->setY(posForFood.y);
 }

@@ -42,11 +42,15 @@ void Position::setDirection(std::string direction) {
 Position Position::getNewCoordinatesForFood() {
     int x=-1; int y=-1;
     
-    while ((x%L != 0) == true || (x == DIM_H) == true || (x == pivot.rect.x) == true) {
+    while ((x%L != 0) == true || (x == DIM_H) == true || (x == pivot.rect.x) == true 
+            || (x == obstacle.getRectAltDX().getX()) || (x == obstacle.getRectAltSX().getX())
+            || (x == obstacle.getRectDwnDX().getX()) || (x == obstacle.getRectDwnSX().getX())) {
         x = 0 + (rand() % (DIM_H -  0 + 1));
     }
 
-    while ((y%L != 0)==true || (y == DIM_H) == true || (y == pivot.rect.y) == true) {
+    while ((y%L != 0)==true || (y == DIM_H) == true || (y == pivot.rect.y) == true
+            || (y == obstacle.getRectAltDX().getY()) || (y == obstacle.getRectAltSX().getY())
+            || (y == obstacle.getRectDwnDX().getY()) || (y == obstacle.getRectDwnSX().getY())) {
         y = 0 + (rand() % (DIM_H - 0 + 1));
     }
 
@@ -71,8 +75,6 @@ Position Position::getNewCoordinates() {
 
     float xF = (float)x;
     float yF = (float)y;
-
-    //printf("\n\nnuove coordinate calcolate %f, %f\n", xF, yF);
 
     return Position(xF, yF, "");
 }

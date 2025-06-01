@@ -46,6 +46,9 @@ int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string dire
                 rect.getY() == obstacle.rectDownSX.getY() || rect.getY() == obstacle.rectDownDX.getY())) 
         return 1;
 
+    else if (rect.getX() == DIM_H || rect.getX() < 0 || rect.getY() == DIM_H || rect.getY() < 0)
+        return 1;
+
     else if (nextMoveIsSnake(rect) == 3) 
         return 3;
     
@@ -91,17 +94,17 @@ void checkIfOutOfWindow(int i) {
         printf("la x era < 0, ora è: %f\n", x);
     } 
     
-    else if (x == DIM_H) {
+    else if (x >= DIM_H) {
         x = 0;
         printf("la x era > MAX, ora è: %f\n", x);
     } 
     
     else if (y < 0) {
-        y = DIM_V;
+        y = DIM_V-L;
         printf("la y era < 0, ora è: %f\n", y);
     }
     
-    else if (y == DIM_H) {
+    else if (y >= DIM_V) {
         y = 0;
         printf("la y era > MAX, ora è: %f\n", y);
     }
@@ -175,17 +178,19 @@ void moveSnake() {
 
             // caso in cui rect incontra un ostacolo o se stesso
             else if (nextMove == 1 || nextMove == 3) {
-                return;
+                printf("%sHO INCONTRATO UN OSTACOLO O ME STESSO\n%s", YELLOW, RESET);
+                endThread = true;
+                //return;
             }
 
-            // caso in cui non ci sono intersezioni
+            // caso in cui intersezioni
             else {
                 if (vectorBody.size() == 0) {
                     printf("%snon ci sono intersezioni, il pivot ha queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
                     pivot.direction.store(pivot.direction.load(), std::memory_order_relaxed);
                     pivot.setX(xDirect);
                     pivot.setY(yDirect);
-                    checkIfOutOfWindow(-1);
+                    //checkIfOutOfWindow(-1);
                 }
                 else {
                     onButtonMove(currDir);
@@ -249,7 +254,7 @@ void onButtonMove(std::string direction) {
         else if (vectorBody[i].getDirection() == "SDLK_LEFT") {
                 vectorBody[i].rect.x -= L;
         }
-        checkIfOutOfWindow(i);
+        //checkIfOutOfWindow(i);
     }
     
     // alla fine del ciclo che parte dalla fine del serpente alla testa (il pivot)
@@ -289,7 +294,7 @@ void onButtonMove(std::string direction) {
             pivot.rect.x -= L;
     }
 
-    checkIfOutOfWindow(-1);
+    //checkIfOutOfWindow(-1);
     //printf("il pivot ha queste coordinate %f,%f\n", pivot.rect.x, pivot.rect.y);
 
     return;
@@ -336,7 +341,7 @@ void moveObstacle(Obstacle& obstacle) {
 
                     obstacle.rectAltSX.updatePos();
             }
-            else
+            else 
                 collision = false;
 
             if (collision == false) {
@@ -363,7 +368,7 @@ void moveObstacle(Obstacle& obstacle) {
         // printf("%scoordinate square basso sinistra: %f,%f\n", BLUE, obstacle.getRectDwnSX().getX(), obstacle.getRectDwnSX().getY());
         // printf("%scoordinate square basso destra: %f,%f\n", YELLOW, obstacle.getRectDwnDX().getX(), obstacle.getRectDwnDX().getY());
 
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
     return;
 }
