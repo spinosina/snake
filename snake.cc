@@ -410,8 +410,8 @@ int main(void) {
             // chiamo la findInVectPos che mi ritorna la direzione verso cui sto girando se e solo se
             // quel pezzo di body è dentro il vettore delle posizioni cambiate
             std::string directionChanged = findInVectPos(vectorBody[i].rect);
-                if (directionChanged == "NotFound") {
-                    if (vectorBody[i].getDirection() == "SDLK_UP")
+            if (directionChanged == "NotFound") {
+                if (vectorBody[i].getDirection() == "SDLK_UP")
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Snake_Body.png", renderer);
                 else if (vectorBody[i].getDirection() == "SDLK_RIGHT")
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try_1_Snake_Body_Right.png", renderer);
