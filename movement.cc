@@ -4,11 +4,11 @@
 #include <iostream>
 #include <thread>
 
-#include "movement_temp.h"
-#include "Snake_temp.h"
-#include "Positions_temp.h"
-#include "globals_temp.h"
-#include "growth_temp.h"
+#include "movement.h"
+#include "snake.h"
+#include "positions.h"
+#include "globals.h"
+#include "growth.h"
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"

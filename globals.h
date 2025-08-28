@@ -4,8 +4,8 @@
 #include <vector>
 #include <atomic>
 
-#include "Snake_temp.h"
-#include "Positions_temp.h"
+#include "snake.h"
+#include "positions.h"
 
 #define L 64
 #define DIM_H 640 //componente orizzontale della risoluzione

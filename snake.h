@@ -30,8 +30,6 @@ public:
     Body(float x, float y, int w, int h, std::string direction);
     std::string getDirection();
     void setDirection(std::string direction);
-    void setX(float x);
-    void setY(float y);
 };
 
 class Pivot : public Square {
@@ -42,8 +40,6 @@ class Pivot : public Square {
         Pivot(float x, float y, int w, int h, int direction);
         int getDirection();
         void setDirection(int direction);
-        void setX(float x);
-        void setY(float y);
     };
 
 // obstacle rappresenta un insieme di 4 rect a partire da square, le cui coordinate sono

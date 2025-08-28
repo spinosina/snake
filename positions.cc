@@ -1,7 +1,7 @@
 #include <string>
 #include <SDL.h>
-#include "Positions_temp.h"
-#include "globals_temp.h"
+#include "positions.h"
+#include "globals.h"
 
 
 // questa classe serve a tener traccia delle posizioni di snake

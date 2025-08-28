@@ -2,7 +2,7 @@
 #define MOVEMENT_TEMP_H
 
 #include <string> 
-#include "Snake_temp.h"
+#include "snake.h"
 
 int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string direction);
 int nextMoveIsSnake(Square rect);

@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "growth_temp.h"
-#include "globals_temp.h"
+#include "growth.h"
+#include "globals.h"
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
