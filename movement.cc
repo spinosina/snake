@@ -169,6 +169,21 @@ void moveSnake() {
                     //printf("%scollisione con food, il pivot ha queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
                     Body newBody = {xForNewElem, yForNewElem, L, L, currDir};
                     vectorBody.push_back(newBody);
+                    switch (pivot.direction.load())
+                    {
+                    case 1:
+                        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSu.png";
+                        break;
+                    case 2:
+                        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaDx.png";
+                        break;
+                    case 3:
+                        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaGiu.png";
+                        break;
+                    case 4:
+                        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSx.png";
+                        break;
+                    }
                     //printf("%scollisione con food, l'elemento che ho aggiunto ha queste coordinate: %f, %f\n%s", BLUE, newBody.getX(), newBody.getY(), RESET);
                 }
                     
@@ -199,7 +214,7 @@ void moveSnake() {
             }
         //}
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     return;
 }

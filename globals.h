@@ -17,6 +17,16 @@
     //extern bool endThread;
     extern Square food;
     extern Pivot pivot;
+    extern std::string pivotSkinPath;
     extern Obstacle obstacle;
     extern int currentScore;
+
+
+    enum class GameState {
+        MENU,
+        GAME,
+        GAME_OVER,
+        SKIN_SELECTION,
+        QUIT
+    };
 #endif
