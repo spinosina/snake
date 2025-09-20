@@ -45,7 +45,7 @@ std::atomic<bool> endThread(false);
 
 void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL sdl, SDL_Texture* pivotSkin, SDL_Texture* pivotBody, SDL_Texture* foodSkin,
     SDL_Texture* obstSkinAltSx, SDL_Texture* obstSkinAltDx, SDL_Texture* obstSkinDwnSx, SDL_Texture* obstSkinDwnDx) {
-    printf("game render\n");
+    //printf("game render\n");
 
     // setto il colore di sfondo
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -64,48 +64,11 @@ void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL 
         SDL_RenderDrawLine(renderer, 0, y, DIM_V, y);
     }
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
+    /*SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);*/
 
-    // setto il colore del pivot se mi trovo nel caso della curva
-    std::string directionChanged = findInVectPos(pivot.rect);
-    if (directionChanged == "SDLK_LEFT" && pivot.direction.load() == 1) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_DXGIU.png", renderer);
-    } 
-    // da left a down
-    else if (directionChanged == "SDLK_DOWN" && pivot.direction.load() == 4) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_GIUSX.png", renderer);
-    }
-    // da down a right
-    else if (directionChanged == "SDLK_RIGHT" && pivot.direction.load() == 3) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SUDX.png", renderer);
-    }
-    // da right a up
-    else if (directionChanged == "SDLK_UP" && pivot.direction.load() == 2) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SXSU.png", renderer);
-    }
-
-    // GESTIONE DELLE CURVE --- senso orario
-    // da up a right
-    if (directionChanged == "SDLK_RIGHT" && pivot.direction.load() == 1) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_GIUSX.png", renderer);
-    } 
-    // da right a down
-    else if (directionChanged == "SDLK_DOWN" && pivot.direction.load() == 2) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_DXGIU.png", renderer);
-    }
-    // da down a left
-    else if (directionChanged == "SDLK_LEFT" && pivot.direction.load() == 3) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SXSU.png", renderer);
-    }
-    // da left a up
-    else if (directionChanged == "SDLK_UP" && pivot.direction.load() == 4) {
-        pivotSkin = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SUDX.png", renderer);
-    } 
-    else if (directionChanged == "NotFound") { // caso not found
-        pivotSkin = sdl.loadTexture(pivotSkinPath, renderer);
-    }
-
+    
+    pivotSkin = sdl.loadTexture(pivotSkinPath, renderer);
     SDL_SetTextureBlendMode(pivotSkin, SDL_BLENDMODE_BLEND);
     SDL_RenderCopyF(renderer, pivotSkin, nullptr, &(pivot.rect));
 
@@ -114,9 +77,9 @@ void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL 
 
         // chiamo la findInVectPos che mi ritorna la direzione verso cui sto girando se e solo se
         // quel pezzo di body è dentro il vettore delle posizioni cambiate
-        directionChanged = findInVectPos(vectorBody[i].rect);
+        std::string directionChanged = findInVectPos(vectorBody[i].rect);
         if (directionChanged == "NotFound") {
-            // caso in cui il non ho girato
+            // caso in cui non ho girato
             // il primo controllo setta la direzione, il secondo decide se l'elemento 
             // considerato è l'ultimo del corpo
             if ((vectorBody[i].getDirection() == "SDLK_UP") && (i+1 == vectorBody.size()))
@@ -140,42 +103,67 @@ void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL 
             // caso curva
             // se non è l'ultimo elemento e se esiste un elemento precedente
             if ((i+1 != vectorBody.size()) && (i != vectorBody.size())) {
+                printf("%selemento i: %d sulla curva %s", YELLOW, i, RESET);
+                
+                // siccome non è l'ultimo elemento, il precedente potrebbe trovarsi su una curva
+                // a sua volta. in quel caso bisogna considerare la nuova direzione che sta per prendere
+                std::string directionPreviousRectChanged = findInVectPos(vectorBody[i+1].rect);
+                std::string directionToCompare = directionPreviousRectChanged!="NotFound"? directionPreviousRectChanged:vectorBody[i+1].direction;
+                printf("%sda: %s a %s sulla curva %s", YELLOW, directionToCompare.c_str(), directionChanged.c_str(), RESET);
 
                 // GESTIONE DELLE CURVE --- senso antiorario
                 // da up a left
-                if (directionChanged == "SDLK_LEFT" && vectorBody[i+1].direction == "SDLK_UP") {
+                if (directionChanged == "SDLK_LEFT" && directionToCompare == "SDLK_UP") {
+                    printf("%s da SOPRA A SINISTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVADXGIU.png", renderer);
-                } 
+                }
                 // da left a down
-                else if (directionChanged == "SDLK_DOWN" && vectorBody[i+1].direction == "SDLK_LEFT") {
+                else if (directionChanged == "SDLK_DOWN" && directionToCompare == "SDLK_LEFT") {
+                    printf("%s da SINISTRA A SOTTO \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVAGIUSX.png", renderer);
                 }
                 // da down a right
-                else if (directionChanged == "SDLK_RIGHT" && vectorBody[i+1].direction == "SDLK_DOWN") {
+                else if (directionChanged == "SDLK_RIGHT" && directionToCompare == "SDLK_DOWN") {
+                    printf("%s da SOTTO A DESTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASUDX.png", renderer);
                 }
                 // da right a up
-                else if (directionChanged == "SDLK_UP" && vectorBody[i+1].direction == "SDLK_RIGHT") {
+                else if (directionChanged == "SDLK_UP" && directionToCompare == "SDLK_RIGHT") {
+                    printf("%s da DESTRA A SOPRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASXSU.png", renderer);
                 }
 
                 // GESTIONE DELLE CURVE --- senso orario
                 // da up a right
-                if (directionChanged == "SDLK_RIGHT" && vectorBody[i+1].direction == "SDLK_UP") {
+                if (directionChanged == "SDLK_RIGHT" && directionToCompare == "SDLK_UP") {
+                    printf("%s da SOPRA A DESTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVAGIUSX.png", renderer);
                 } 
                 // da right a down
-                else if (directionChanged == "SDLK_DOWN" && vectorBody[i+1].direction == "SDLK_RIGHT") {
+                else if (directionChanged == "SDLK_DOWN" && directionToCompare == "SDLK_RIGHT") {
+                    printf("%s da DESTRA A SOTTO \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVADXGIU.png", renderer);
                 }
                 // da down a left
-                else if (directionChanged == "SDLK_LEFT" && vectorBody[i+1].direction == "SDLK_DOWN") {
+                else if (directionChanged == "SDLK_LEFT" && directionToCompare == "SDLK_DOWN") {
+                    printf("%s da SOTTO A SINISTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASXSU.png", renderer);
                 }
                 // da left a up
-                else if (directionChanged == "SDLK_UP" && vectorBody[i+1].direction == "SDLK_LEFT") {
+                else if (directionChanged == "SDLK_UP" && directionToCompare == "SDLK_LEFT") {
+                    printf("%s da SINISTRA A SOPRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASUDX.png", renderer);
                 }
+            }
+            else if (i != vectorBody.size()) {
+                if ((directionChanged == "SDLK_UP"))
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/Corpo_CodaSu.png", renderer);
+                else if (directionChanged == "SDLK_RIGHT")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/Corpo_CodaDx.png", renderer);
+                else if (directionChanged == "SDLK_LEFT")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/Corpo_CodaSx.png", renderer);
+                else if (directionChanged == "SDLK_DOWN")
+                    pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/Corpo_CodaGiu.png", renderer);
             }
         }
 
@@ -212,7 +200,7 @@ void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL 
 }
 
 void renderMenu(SDL_Renderer* renderer, SDL sdl) {
-    printf("menu render\n");
+    //printf("menu render\n");
 
     //Sfondo Menu
     SDL_Texture* textMenu = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Menu.png", renderer);
@@ -234,7 +222,7 @@ void renderMenu(SDL_Renderer* renderer, SDL sdl) {
 }
 
 void handleGame(SDL_Event &event, GameState &state, int getDir, SDL_Renderer* renderer, SDL sdl, SDL_Texture* pivotSkin) {
-    printf("game handle\n");
+    //printf("game handle\n");
 
     // variabile del movimento
     int nextMove = -1;
@@ -492,7 +480,7 @@ void handleGame(SDL_Event &event, GameState &state, int getDir, SDL_Renderer* re
 }
 
 void handleMenu(SDL_Event &event, GameState &state, SDL_Renderer* renderer) {
-    printf("menu handle\n");
+    //printf("menu handle\n");
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_UP) {
         printf("cliccato giu");
         SDL_Texture* textCursor = SDL_CreateTextureFromSurface(renderer, surfaceCursore);
@@ -515,10 +503,10 @@ void handleMenu(SDL_Event &event, GameState &state, SDL_Renderer* renderer) {
 
    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
     if (cursorPosition.y == 480) {
-        printf("Game Start");
+        //printf("Game Start");
         state = GameState::GAME;
     } else {
-        printf("Game Skin");
+        //printf("Game Skin");
         state = GameState::SKIN_SELECTION;
     }
    }
@@ -620,7 +608,7 @@ int main(void) {
                     handleMenu(event, state, renderer);
                     break;
                 case GameState::GAME:
-                    printf("GAME\n");
+                    //printf("GAME\n");
                     handleGame(event, state, getDir, renderer, sdl, pivotSkin);
                     break;
                 default:

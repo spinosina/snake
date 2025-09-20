@@ -30,6 +30,7 @@ void growing(Body body) {
 
     vectorBody.push_back(newBody);
 
+    printf("%sla direzione attuale del pivot è %d%s\n", RED, pivot.getDirection(), RESET);
     for (int i = 0; i < vectorBody.size(); i++) {
         printf("%sla direzione attuale di %d è %s%s\n", RED, i, vectorBody[i].direction.c_str(), RESET);
     }

@@ -35,19 +35,43 @@ int nextMoveIsRect(Square rect, Square food, Obstacle obstacle, std::string dire
         rect.setX(rect.getX() - L);
         
     if (rect.getX() == food.getX() && rect.getY() == food.getY()) {
-        printf("%scollision con food %s\n", YELLOW, RESET);
+        //printf("%scollision con food %s\n", YELLOW, RESET);
         onButtonMove(direction);
         return 0;
     }
 
-    else if ((rect.getX() == obstacle.rectAltSX.getX() || rect.getX() == obstacle.rectAltDX.getX() || 
+    else if (((rect.getX() == obstacle.rectAltSX.getX() || rect.getX() == obstacle.rectAltDX.getX() || 
                 rect.getX() == obstacle.rectDownSX.getX() || rect.getX() == obstacle.rectDownDX.getX())
                 && (rect.getY() == obstacle.rectAltSX.getY() || rect.getY() == obstacle.rectAltDX.getY() || 
-                rect.getY() == obstacle.rectDownSX.getY() || rect.getY() == obstacle.rectDownDX.getY())) 
+                rect.getY() == obstacle.rectDownSX.getY() || rect.getY() == obstacle.rectDownDX.getY()))
+                || (rect.getX() == DIM_H || rect.getX() < 0 || rect.getY() == DIM_H || rect.getY() < 0)) {
+        
+        if (direction=="SDLK_UP" && pivot.direction.load(std::memory_order_relaxed)==2){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_DXSU.png";
+        }
+        else if (direction=="SDLK_UP" && pivot.direction.load(std::memory_order_relaxed)==4){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SXSU.png";
+        }
+        else if (direction=="SDLK_DOWN" && pivot.direction.load(std::memory_order_relaxed)==2){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_DXGIU.png";
+        }
+        else if (direction=="SDLK_DOWN" && pivot.direction.load(std::memory_order_relaxed)==4){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SXGIU.png";
+        }
+        else if (direction=="SDLK_RIGHT" && pivot.direction.load(std::memory_order_relaxed)==1){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SUDX.png";
+        }
+        else if (direction=="SDLK_RIGHT" && pivot.direction.load(std::memory_order_relaxed)==3){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_GIUSX.png";
+        }
+        else if (direction=="SDLK_LEFT" && pivot.direction.load(std::memory_order_relaxed)==1){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_SUSX.png";
+        }
+        else if (direction=="SDLK_LEFT" && pivot.direction.load(std::memory_order_relaxed)==3){
+            pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaCurva_GIUDX.png";
+        }
         return 1;
-
-    else if (rect.getX() == DIM_H || rect.getX() < 0 || rect.getY() == DIM_H || rect.getY() < 0)
-        return 1;
+    }
 
     else if (nextMoveIsSnake(rect) == 3) 
         return 3;
@@ -193,7 +217,7 @@ void moveSnake() {
 
             // caso in cui rect incontra un ostacolo o se stesso
             else if (nextMove == 1 || nextMove == 3) {
-                printf("%sHO INCONTRATO UN OSTACOLO O ME STESSO\n%s", YELLOW, RESET);
+                //printf("%sHO INCONTRATO UN OSTACOLO O ME STESSO\n%s", YELLOW, RESET);
                 endThread = true;
                 //return;
             }
@@ -201,7 +225,7 @@ void moveSnake() {
             // caso in cui intersezioni
             else {
                 if (vectorBody.size() == 0) {
-                    printf("%snon ci sono intersezioni, il pivot ha queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
+                    //printf("%snon ci sono intersezioni, il pivot ha queste coordinate: %f, %f\n%s", YELLOW, xDirect, yDirect, RESET);
                     pivot.direction.store(pivot.direction.load(), std::memory_order_relaxed);
                     pivot.setX(xDirect);
                     pivot.setY(yDirect);
@@ -214,7 +238,7 @@ void moveSnake() {
             }
         //}
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
     }
     return;
 }
@@ -241,6 +265,7 @@ void onButtonMove(std::string direction) {
     if (pivotDirectionBeforeChange != direction) {
         Position directionChanged = Position(pivot.rect.x, pivot.rect.y, direction);
         vectorPosChanged.push_back(directionChanged);
+        printf("%ssto cambiando direzione da %s a %s\n%s", YELLOW, pivotDirectionBeforeChange.c_str(), direction.c_str(), RESET);
     }
 
     for (int i = vectorBody.size()-1; i >= 0; i--) {
@@ -250,11 +275,11 @@ void onButtonMove(std::string direction) {
             std::string found = findInVectPos(vectorBody[i]);
 
             if (found != "NotFound"){
-                printf("New direction: %s\n", found.c_str());
+                printf("l'elemento: %d è in un punto di svolta direzione: %s\n", i, found.c_str());
                 vectorBody[i].setDirection(found);
             }
-            else 
-                printf("Element not found.\n");
+            //else 
+                //printf("Element not found.\n");
         }
 
         if (vectorBody[i].getDirection() == "SDLK_DOWN") {
@@ -270,6 +295,8 @@ void onButtonMove(std::string direction) {
                 vectorBody[i].rect.x -= L;
         }
         //checkIfOutOfWindow(i);
+        if (i == 0)
+            printf("\n\n");
     }
     
     // alla fine del ciclo che parte dalla fine del serpente alla testa (il pivot)
@@ -293,8 +320,8 @@ void onButtonMove(std::string direction) {
 
             pivot.direction.store(directionInt, std::memory_order_relaxed);
         }
-        else 
-            printf("Element not found.\n");
+        //else 
+            //printf("Element not found.\n");
     }
     if (pivot.direction.load(std::memory_order_relaxed) == 3) {
         pivot.rect.y += L;
