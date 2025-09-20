@@ -238,7 +238,7 @@ void moveSnake() {
             }
         //}
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(800));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     return;
 }
@@ -265,7 +265,7 @@ void onButtonMove(std::string direction) {
     if (pivotDirectionBeforeChange != direction) {
         Position directionChanged = Position(pivot.rect.x, pivot.rect.y, direction);
         vectorPosChanged.push_back(directionChanged);
-        printf("%ssto cambiando direzione da %s a %s\n%s", YELLOW, pivotDirectionBeforeChange.c_str(), direction.c_str(), RESET);
+        //printf("%ssto cambiando direzione da %s a %s\n%s", YELLOW, pivotDirectionBeforeChange.c_str(), direction.c_str(), RESET);
     }
 
     for (int i = vectorBody.size()-1; i >= 0; i--) {
@@ -275,7 +275,7 @@ void onButtonMove(std::string direction) {
             std::string found = findInVectPos(vectorBody[i]);
 
             if (found != "NotFound"){
-                printf("l'elemento: %d è in un punto di svolta direzione: %s\n", i, found.c_str());
+                //printf("l'elemento: %d è in un punto di svolta direzione: %s\n", i, found.c_str());
                 vectorBody[i].setDirection(found);
             }
             //else 
@@ -295,8 +295,6 @@ void onButtonMove(std::string direction) {
                 vectorBody[i].rect.x -= L;
         }
         //checkIfOutOfWindow(i);
-        if (i == 0)
-            printf("\n\n");
     }
     
     // alla fine del ciclo che parte dalla fine del serpente alla testa (il pivot)

@@ -109,49 +109,49 @@ void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL 
                 // a sua volta. in quel caso bisogna considerare la nuova direzione che sta per prendere
                 std::string directionPreviousRectChanged = findInVectPos(vectorBody[i+1].rect);
                 std::string directionToCompare = directionPreviousRectChanged!="NotFound"? directionPreviousRectChanged:vectorBody[i+1].direction;
-                printf("%sda: %s a %s sulla curva %s", YELLOW, directionToCompare.c_str(), directionChanged.c_str(), RESET);
+                //printf("%sda: %s a %s sulla curva %s", YELLOW, directionToCompare.c_str(), directionChanged.c_str(), RESET);
 
                 // GESTIONE DELLE CURVE --- senso antiorario
                 // da up a left
                 if (directionChanged == "SDLK_LEFT" && directionToCompare == "SDLK_UP") {
-                    printf("%s da SOPRA A SINISTRA \n%s", RED, RESET);
+                    //printf("%s da SOPRA A SINISTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVADXGIU.png", renderer);
                 }
                 // da left a down
                 else if (directionChanged == "SDLK_DOWN" && directionToCompare == "SDLK_LEFT") {
-                    printf("%s da SINISTRA A SOTTO \n%s", RED, RESET);
+                    //printf("%s da SINISTRA A SOTTO \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVAGIUSX.png", renderer);
                 }
                 // da down a right
                 else if (directionChanged == "SDLK_RIGHT" && directionToCompare == "SDLK_DOWN") {
-                    printf("%s da SOTTO A DESTRA \n%s", RED, RESET);
+                    //printf("%s da SOTTO A DESTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASUDX.png", renderer);
                 }
                 // da right a up
                 else if (directionChanged == "SDLK_UP" && directionToCompare == "SDLK_RIGHT") {
-                    printf("%s da DESTRA A SOPRA \n%s", RED, RESET);
+                    //printf("%s da DESTRA A SOPRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASXSU.png", renderer);
                 }
 
                 // GESTIONE DELLE CURVE --- senso orario
                 // da up a right
                 if (directionChanged == "SDLK_RIGHT" && directionToCompare == "SDLK_UP") {
-                    printf("%s da SOPRA A DESTRA \n%s", RED, RESET);
+                    //printf("%s da SOPRA A DESTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVAGIUSX.png", renderer);
                 } 
                 // da right a down
                 else if (directionChanged == "SDLK_DOWN" && directionToCompare == "SDLK_RIGHT") {
-                    printf("%s da DESTRA A SOTTO \n%s", RED, RESET);
+                    //printf("%s da DESTRA A SOTTO \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVADXGIU.png", renderer);
                 }
                 // da down a left
                 else if (directionChanged == "SDLK_LEFT" && directionToCompare == "SDLK_DOWN") {
-                    printf("%s da SOTTO A SINISTRA \n%s", RED, RESET);
+                    //printf("%s da SOTTO A SINISTRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASXSU.png", renderer);
                 }
                 // da left a up
                 else if (directionChanged == "SDLK_UP" && directionToCompare == "SDLK_LEFT") {
-                    printf("%s da SINISTRA A SOPRA \n%s", RED, RESET);
+                    //printf("%s da SINISTRA A SOPRA \n%s", RED, RESET);
                     pivotBody = sdl.loadTexture("/Users/marianna/Desktop/snakes/Skin/Try3/CURVASUDX.png", renderer);
                 }
             }
