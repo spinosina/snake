@@ -25,9 +25,12 @@
     std::vector<Position> vectorPosChanged;
     // elementi secondari
     Square food = Square(0, 0, L, L);
-    std::string foodSkinPath;
+    std::string foodSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_2_Oliva.png";
     Obstacle obstacle = Obstacle();
-    std::string obstacleAltSxSkinPath, obstacleAltDxSkinPath, obstacleDownSxSkinPath, obstacleDownDxSkinPath;
+    std::string obstacleAltSxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltSX.png";
+    std::string obstacleAltDxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltDX.png";
+    std::string obstacleDownSxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_DwnSX.png";
+    std::string obstacleDownDxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_DwnDX.png";
     // pivot e skin
     Pivot pivot(0.0, 0.0, L, L, -1);
     std::string pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaGiu_Mono.png";
@@ -101,13 +104,11 @@ void renderGame(SDL_Window* window, SDL_Renderer* renderer, TTF_Font* font, SDL 
             // caso curva
             // se non è l'ultimo elemento e se esiste un elemento precedente
             if ((i+1 != vectorBody.size()) && (i != vectorBody.size())) {
-                printf("%selemento i: %d sulla curva %s", YELLOW, i, RESET);
                 
                 // siccome non è l'ultimo elemento, il precedente potrebbe trovarsi su una curva
                 // a sua volta. in quel caso bisogna considerare la nuova direzione che sta per prendere
                 std::string directionPreviousRectChanged = findInVectPos(vectorBody[i+1].rect);
                 std::string directionToCompare = directionPreviousRectChanged!="NotFound"? directionPreviousRectChanged:vectorBody[i+1].direction;
-                //printf("%sda: %s a %s sulla curva %s", YELLOW, directionToCompare.c_str(), directionChanged.c_str(), RESET);
 
                 // GESTIONE DELLE CURVE --- senso antiorario
                 // da up a left
@@ -468,7 +469,7 @@ int main(void) {
     // inizializzo il renderer
     SDL_Renderer* renderer = sdl.initRenderer(window);
     // inizializzo il font
-    TTF_Font* font =sdl.initFont();
+    TTF_Font* font = sdl.initFont();
     // inizializzo la skin della testa di snake
     SDL_Texture* pivotSkin = sdl.loadTexture(pivotSkinPath, renderer);
     // inizializzo la skin del corpo di snake

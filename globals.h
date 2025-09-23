@@ -26,11 +26,11 @@ extern Pivot pivot;
 extern std::string pivotSkinPath;
 extern std::string pivotSkinPath;
 extern std::string bodySkinPath;
-extern std::string foodSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_2_Oliva.png";
-extern std::string obstacleAltSxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltSX.png";
-extern std::string obstacleAltDxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltDX.png";
-extern std::string obstacleDownSxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_DwnSX.png";
-extern std::string obstacleDownDxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_DwnDX.png";
+extern std::string foodSkinPath;
+extern std::string obstacleAltSxSkinPath;
+extern std::string obstacleAltDxSkinPath;
+extern std::string obstacleDownSxSkinPath;
+extern std::string obstacleDownDxSkinPath;
 extern Obstacle obstacle;
 extern int currentScore;
 
@@ -46,58 +46,14 @@ enum class GameState
 
 // recupero la direzione in stringa dal valore della direzione numerica del pivot
 // che ha come campo un intero atomico
-std::string getDirectionFromPivot(int directionNum)
-{
-    switch (directionNum)
-    {
-    case 1:
-        return "SDLK_UP";
-        break;
-    case 2:
-        return "SDLK_RIGHT";
-        break;
-    case 3:
-        return "SDLK_DOWN";
-        break;
-    case 4:
-        return "SDLK_LEFT";
-        break;
-    }
-    return "";
-};
+extern std::string getDirectionFromPivot(int directionNum);
 
 // recupero la direzione sottoforma di intero da inserire all'interno del valore atomico del pivot
 // in base alla direzione sottoforma di stringa
-int getPivotFromDirection(std::string direction)
-{
-    if (strcmp(direction.c_str(), "SDLK_UP")==0)
-        return 1;
-    else if (strcmp(direction.c_str(), "SDLK_RIGHT")==0)
-        return 2;
-    else if (strcmp(direction.c_str(), "SDLK_DOWN")==0)
-        return 3;
-    else if (strcmp(direction.c_str(), "SDLK_LEFT")==0)
-        return 4;
-};
+extern int getPivotFromDirection(std::string direction);
 
 // recupero il path da dare al pivot a seconda della direzione che ha
 // nel suo valore atomico
-std::string getPivotNewSkinAfterCollision(int directionNum) {
-    switch (directionNum)
-    {
-    case 1:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSu.png";
-        break;
-    case 2:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaDx.png";
-        break;
-    case 3:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaGiu.png";
-        break;
-    case 4:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSx.png";
-        break;
-    }
-}
+extern std::string getPivotNewSkinAfterCollision(int directionNum);
 
 #endif

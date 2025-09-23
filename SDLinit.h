@@ -108,8 +108,10 @@ public:
         TTF_Font* font = TTF_OpenFont("/System/Library/Fonts/Supplemental/Arial.ttf", 20);
         if (!font) {
             printf("Errore: il font non è stato caricato! %s\n", TTF_GetError());
-            return font;
+            return nullptr;
         }
+
+        return font;
     }
 };
 

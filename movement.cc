@@ -146,13 +146,13 @@ void moveSnake() {
         float yForNewElem = pivot.rect.y;
         float xForNewElem= pivot.rect.x;
         currDir = getDirectionFromPivot(pivot.direction.load());
-        if (currDir.c_str() == "SDLK_UP")
+        if (strcmp(currDir.c_str(), "SDLK_UP")==0)
             yDirect-=L;
-        else if (currDir.c_str() == "SDLK_RIGHT")
+        else if (strcmp(currDir.c_str(), "SDLK_RIGHT")==0)
             xDirect+=L;
-        else if (currDir.c_str() == "SDLK_DOWN")
+        else if (strcmp(currDir.c_str(), "SDLK_DOWN")==0)
             yDirect+=L;
-        else if (currDir.c_str() == "SDLK_LEFT")
+        else if (strcmp(currDir.c_str(), "SDLK_LEFT")==0)
             xDirect-=L;
 
         //printf("%sall'inizio il pivot ha queste coordinate: %f, %f\n%s", RED, pivot.rect.x, pivot.rect.y, RESET);
