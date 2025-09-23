@@ -248,7 +248,7 @@ void handleGame(SDL_Event &event, GameState &state, int getDir, SDL_Renderer* re
             if (nextMove == 0) {
                 // incremento lo score e riposiziono food
                 currentScore++;
-                food.updatePos();
+                food.updatePosForFood();
 
                 // snake cresce
                 // se non esiste ancora il body lo creo
@@ -299,7 +299,7 @@ void handleGame(SDL_Event &event, GameState &state, int getDir, SDL_Renderer* re
             if (nextMove == 0) {
                 // incremento lo score e riposiziono food
                 currentScore++;
-                food.updatePos();
+                food.updatePosForFood();
 
                 // snake cresce
                 if (vectorBody.size() == 0) {
@@ -348,7 +348,7 @@ void handleGame(SDL_Event &event, GameState &state, int getDir, SDL_Renderer* re
             if (nextMove == 0) {
                 // incremento lo score e riposiziono food
                 currentScore++;
-                food.updatePos();
+                food.updatePosForFood();
 
                 // snake cresce
                 if (vectorBody.size() == 0) {
@@ -397,7 +397,7 @@ void handleGame(SDL_Event &event, GameState &state, int getDir, SDL_Renderer* re
             if (nextMove == 0) {
                 // incremento lo score e riposiziono food
                 currentScore++;
-                food.updatePos();
+                food.updatePosForFood();
 
                 if (vectorBody.size() == 0) {
                     Body newBody = {pivot.rect.x-L, pivot.rect.y, L, L, "SDLK_RIGHT"};

@@ -57,7 +57,7 @@ Position Position::getNewCoordinatesForFood() {
     float xF = (float)x;
     float yF = (float)y;
 
-    printf("\n\nnuove coordinate calcolate %f, %f\n", xF, yF);
+    //printf("%snuove coordinate calcolate per food %f, %f%s\n", YELLOW, xF, yF, RESET);
 
     return Position(xF, yF, "");
 }
@@ -75,6 +75,8 @@ Position Position::getNewCoordinates() {
 
     float xF = (float)x;
     float yF = (float)y;
+
+    //printf("%snuove coordinate calcolate per ostacolo %f, %f%s\n", RED, xF, yF, RESET);
 
     return Position(xF, yF, "");
 }
