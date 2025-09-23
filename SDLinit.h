@@ -92,8 +92,24 @@ public:
         }
         // crea una texture dalla surface (l'immagine)
         SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (!texture) {
+            printf("Error in texture. Exit ...");
+            return nullptr;
+        }
         SDL_FreeSurface(surface);
         return texture;
+    }
+
+    TTF_Font* initFont() {
+        if (TTF_Init() == -1) {
+            printf("Errore inizializzazione SDL_ttf: %s\n", TTF_GetError());
+            return nullptr;
+        }
+        TTF_Font* font = TTF_OpenFont("/System/Library/Fonts/Supplemental/Arial.ttf", 20);
+        if (!font) {
+            printf("Errore: il font non è stato caricato! %s\n", TTF_GetError());
+            return font;
+        }
     }
 };
 
