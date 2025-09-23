@@ -41,16 +41,16 @@ std::string getPivotNewSkinAfterCollision(int directionNum) {
     switch (directionNum)
     {
     case 1:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSu.png";
+        return "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSu.png";
         break;
     case 2:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaDx.png";
+        return "/Users/marianna/Desktop/snakes/Skin/Try3/TestaDx.png";
         break;
     case 3:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaGiu.png";
+        return "/Users/marianna/Desktop/snakes/Skin/Try3/TestaGiu.png";
         break;
     case 4:
-        pivotSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSx.png";
+        return "/Users/marianna/Desktop/snakes/Skin/Try3/TestaSx.png";
         break;
     }
 

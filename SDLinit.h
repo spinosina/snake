@@ -87,7 +87,7 @@ public:
         // carico l'immagine considerandola una surface
         SDL_Surface* surface = IMG_Load(path.c_str());
         if (!surface) {
-            printf("Errore nel caricamento dell'immagine: %s ", IMG_GetError());
+            printf("Errore nel caricamento dell'immagine: %s\n ", IMG_GetError());
             return nullptr;
         }
         // crea una texture dalla surface (l'immagine)

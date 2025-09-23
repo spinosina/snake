@@ -192,6 +192,7 @@ void moveSnake() {
             // sennò chiamo la funzione per far crescere anche il corpo
             // ed eliminare eventuali posizioni di curva già superate
             else {
+                pivotSkinPath = getPivotNewSkinAfterCollision(pivot.direction.load());
                 onButtonMove(currDir);
                 removeUselessPos();
             }

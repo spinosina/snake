@@ -24,7 +24,6 @@ extern std::atomic<bool> endThread;
 extern Square food;
 extern Pivot pivot;
 extern std::string pivotSkinPath;
-extern std::string pivotSkinPath;
 extern std::string bodySkinPath;
 extern std::string foodSkinPath;
 extern std::string obstacleAltSxSkinPath;
