@@ -25,7 +25,7 @@
     std::vector<Position> vectorPosChanged;
     // elementi secondari
     Square food = Square(0, 0, L, L);
-    std::string foodSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_2_Oliva.png";
+    std::string foodSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try3/Oliva_NoBack_NoBorder.png";
     Obstacle obstacle = Obstacle();
     std::string obstacleAltSxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltSX.png";
     std::string obstacleAltDxSkinPath = "/Users/marianna/Desktop/snakes/Skin/Try_1_Rock_AltDX.png";
